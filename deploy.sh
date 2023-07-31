@@ -1,0 +1,28 @@
+#!/bin/bash
+
+# git clone
+echo "Start to clone"
+git clone https://github.com/IvaninITworld/Dev_django_app.git
+cd Dev_django_app
+
+# venv 설치
+echo "Start to install venv"
+sudo apt-get update
+sudo apt install -y python3.8-venv
+
+# venv 구성
+echo "Start to make venv"
+python3 -m venv venv
+
+# 가상환경 작동
+echo "Start to activate venv"
+source venv/bin/activate
+
+# pip install
+echo "start to install requirements"
+pip install -r requirements.txt
+
+# runserver
+echo "Start to runserver"
+cd lion_app
+python3 manage.py runserver 0.0.0.0:8000
