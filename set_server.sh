@@ -19,7 +19,7 @@ done
 
 if [ -z $SERVER_IP ]; then
     SERVER_IP=$(curl ifconfig.me)
-    exit 1
+    # exit 1
 fi
 
 
@@ -28,7 +28,7 @@ echo "Install nginx"
 sudo apt install -y nginx
 
 # nginx configuration file 
-ehco "Create nginx config"
+echo "Create nginx config"
 sudo sh -c "cat > /etc/nginx/sites-available/django <<EOF
 server {
 	listen 80;
@@ -36,15 +36,22 @@ server {
 
 	location / {
 		proxy_pass http://127.0.0.1:8000;
-		proxy_set_header Host \$host;
-		proxy_set_header X-Real-IP \$remote_addr;
+		proxy_set_header Host \\\$host;
+		proxy_set_header X-Real-IP \\\$remote_addr;
 	}
 }
 EOF"
 
 # symlink
 echo "Create symlink"
-sudo ln -s /etc/nginx/sites-available/django /etc/nginx/sites-enabled/
+TARGET_CONF=/etc/nginx/sites-enabled/django
+
+if [ -e $TARGET_CONF ]; then
+    ehco "Remove symlink"
+    sudo rm $TARGET_CONF
+fi
+
+sudo ln -s /etc/nginx/sites-available/django $TARGET_CONF
 
 # nginx restart
 echo "Restart nginx"
