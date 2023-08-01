@@ -2,8 +2,8 @@
 
 # git clone
 echo "Start to clone"
-git clone https://github.com/IvaninITworld/Dev_django_app.git
-cd Dev_django_app
+git clone https://github.com/IvaninITworld/Dev_django_app.git dev_django_app
+cd dev_django_app
 
 # venv 설치
 echo "Start to install venv"
