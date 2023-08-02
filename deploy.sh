@@ -22,7 +22,7 @@ source venv/bin/activate
 echo "start to install requirements"
 pip install -r requirements.txt
 
-# runserver
-echo "Start to runserver"
-cd lion_app
-python3 manage.py runserver 0.0.0.0:8000
+# # runserver 기존작업에 제외 -> nginx로 서버를 띄울거니까
+# echo "Start to runserver"
+# cd lion_app
+# python3 manage.py runserver 0.0.0.0:8000
