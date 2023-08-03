@@ -1,0 +1,15 @@
+server {
+	listen 80;
+	# server_name http 223.130.133.96;
+	server_name localhost;
+
+	location / {
+		# 아래의 코드로는 nginx가 실행된 컨테이너의 주소로 보내기 때문에 Bad request 가 뜬다.
+		# proxy_pass http://127.0.0.1:8000;
+
+		# 그래서 lion-app 즉 장고가 떠있는 컨테이너의 8000포트로 프록시 패스로 넣어주어야 한다.
+		proxy_pass http://lion-app:8000;
+		proxy_set_header Host $host;
+		proxy_set_header X-Real-IP $remote_addr;
+	}
+}

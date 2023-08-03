@@ -28,6 +28,8 @@ DEBUG = True
 ALLOWED_HOSTS = [
     "223.130.136.229",
     "223.130.133.96",
+    "localhost",
+    "127.0.0.1",
 ]
 
 
@@ -119,6 +121,12 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/4.2/howto/static-files/
 
 STATIC_URL = 'static/'
+
+# 배포환경에서는 STATIC_ROOT 를 사용하여
+# 별도 관리를 위해 분산되어 있는 코드들을 컬렉팅하는 collectstatic 을 이용한다.
+STATIC_ROOT = '/var/www/html/static'
+
+
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/4.2/ref/settings/#default-auto-field
