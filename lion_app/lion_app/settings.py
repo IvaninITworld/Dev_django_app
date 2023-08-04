@@ -39,7 +39,6 @@ CSRF_TRUSTED_ORIGINS = [
 # Application definition
 
 INSTALLED_APPS = [
-    'forumapp',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -47,6 +46,15 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
 ]
+
+## Created Apps
+INSTALLED_APPS += [
+    'forumapp',
+]
+
+## Third party Apps
+INSTALLED_APPS += []
+
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',

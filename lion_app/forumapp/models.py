@@ -8,7 +8,7 @@ class Topic(models.Model):
     # postgres 를 사용할 예정이기 때문에 -> postgres 에서는 Text 와 Char 를 같게 취급 
     # 그래서 스트링을 다루는 곳에서는 Text 사용 - 공식문서
     name = models.TextField(max_length=100, unique=True)
-    is_priate = models.BooleanField(default=False)
+    is_private = models.BooleanField(default=False)
     owner = models.ForeignKey(User, on_delete=models.PROTECT)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
