@@ -14,6 +14,8 @@ services: # 서비스들의 시작
     volumes:
       - ./lion_app:/app
       - static:/var/www/html/static
+    command:
+      - "/start"
 
   nginx:
     container_name: lion-nginx-dc
