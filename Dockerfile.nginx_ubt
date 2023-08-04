@@ -1,0 +1,22 @@
+FROM ubuntu:22.04
+# LABEL likelion.web.backendauthor="Ivan Kim <xormrdlsrks2@gmail.com>"
+
+RUN apt-get update
+RUN apt-get install -y nginx vim
+
+RUN echo "\ndaemon off;" >> /etc/nginx/nginx.conf
+RUN chown -R www-data:www-data /var/lib/nginx
+
+# nginx.conf 파일을 컨테이너로 가져가
+COPY ./lion_app/lion_app/django.nginx /etc/nginx/sites-available/django
+RUN ln -s /etc/nginx/sites-available/django /etc/nginx/sites-enabled/django
+
+# VOLUME [ "/data", "/etc/nginx/sites-enabled", "/var/log/nginx" ]
+
+WORKDIR /etc/nginx
+
+CMD [ "nginx" ]
+
+EXPOSE 80
+EXPOSE 443
+

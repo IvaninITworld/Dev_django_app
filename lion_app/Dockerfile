@@ -19,6 +19,7 @@ RUN pip install --no-cache-dir -r requirements.txt
 
 COPY . ${APP_HOME}
 
+RUN python3 manage.py makemigrations
 RUN python3 manage.py migrate
 
 # 정적파일을 긁어다가 root 로 보내줘야함

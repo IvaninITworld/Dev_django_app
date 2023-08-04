@@ -32,10 +32,14 @@ ALLOWED_HOSTS = [
     "127.0.0.1",
 ]
 
+CSRF_TRUSTED_ORIGINS = [
+    'http://localhost:8888',
+]
 
 # Application definition
 
 INSTALLED_APPS = [
+    'forumapp',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
