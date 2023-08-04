@@ -1,0 +1,31 @@
+# docker-compose 파일의 버전을 명시
+version: "3"
+
+services: # 서비스들의 시작
+  # 앱 설정
+  lion-app:
+    container_name: lion-app-dc
+    build:
+      context: lion_app
+      dockerfile: Dockerfile # 사용할 도커 파일의 이름
+    image: lion-app:0.5
+    ports:
+      - "8000:8000" # 앞쪽이 호스트 시스템의 포트 : 뒤쬑이 컨테이너의 포트
+    volumes:
+      - ./lion_app:/app
+      - static:/var/www/html/static
+
+  nginx:
+    container_name: lion-nginx-dc
+    build:
+      context: .
+      dockerfile: Dockerfile.nginx_ubt
+    image: lion-nginx
+    ports:
+      - "8888:80"
+    volumes: 
+      - static:/var/www/html/static
+
+volumes:
+  static:
+  lion_static:
