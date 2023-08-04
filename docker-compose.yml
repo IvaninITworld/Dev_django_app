@@ -25,7 +25,7 @@ services: # 서비스들의 시작
     image: lion-nginx
     ports:
       - "8888:80"
-    volumes: 
+    volumes:
       - static:/var/www/html/static
 
 volumes:
