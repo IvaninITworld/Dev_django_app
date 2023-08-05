@@ -1,5 +1,15 @@
 #!/bin/bash
 
+# Required package install
+echo "apt-get update execution"
+sudo apt-get update 
+
+echo "apt-get install curl execution"
+sudo apt-get install -y curl
+
+echo "apt-get install docker execution"
+sudo apt-get install -y docker.io docker-compose
+
 # git clone
 echo "Start to clone"
 git clone https://github.com/IvaninITworld/Dev_django_app.git dev_django_app
@@ -26,3 +36,6 @@ pip install -r requirements.txt
 # echo "Start to runserver"
 # cd lion_app
 # python3 manage.py runserver 0.0.0.0:8000
+
+
+
