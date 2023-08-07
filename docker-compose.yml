@@ -5,6 +5,8 @@ version: "3"
 services: # 서비스들의 시작
   # 앱 설정
   lion-app:
+    depends_on:
+      - db
     container_name: lion-app-dc
     build:
       context: lion_app
@@ -21,7 +23,8 @@ services: # 서비스들의 시작
       - ./.env
 
   nginx:
-    depends_on:
+    restart: always
+    depends_on: # depends_on 명령어로 실행 순서를 만들어준다
       - lion-app
     container_name: lion-nginx-dc
     build:
@@ -36,6 +39,14 @@ services: # 서비스들의 시작
       - staticfiles:/var/www/html/static
     env_file: # nginx 컨테이너에도 같은 환경변수가 들어가게 됨
       - ./.env
+
+  db:
+    image: postgres:15
+    env_file:
+      - ./.env
+    ports:
+      - "15432:5432"
+
 
 volumes:
   staticfiles:
