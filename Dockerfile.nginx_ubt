@@ -16,19 +16,21 @@ RUN chown -R www-data:www-data /var/lib/nginx
 RUN echo "server {\n\
     listen 80;\n\
     server_name localhost ${SERVER_NAME};\n\
-\ㅜ\
+\n\
     location / {\n\
         proxy_pass http://lion-app:8000;\n\
 		proxy_set_header Host \$host;\n\
 		proxy_set_header X-Real-IP \$remote_addr;\n\
     }\n\
-}" >> /etc/nginx/sites-available/django
+}" > /etc/nginx/sites-available/django
 
 RUN ln -s /etc/nginx/sites-available/django /etc/nginx/sites-enabled/django
 
 # VOLUME [ "/data", "/etc/nginx/sites-enabled", "/var/log/nginx" ]
 
 WORKDIR /etc/nginx
+
+RUN mkdir /var/www/html/static
 
 CMD [ "nginx" ]
 
