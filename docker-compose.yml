@@ -13,25 +13,29 @@ services: # 서비스들의 시작
       - "8000:8000" # 앞쪽이 호스트 시스템의 포트 : 뒤쬑이 컨테이너의 포트
     volumes:
       - ./lion_app:/app
-      - static:/var/www/html/static
+      - staticfiles:/var/www/html/static
     command:
       - "/start"
     env_file:
       - ./prod.env
 
   nginx:
+    depends_on:
+      - lion-app
     container_name: lion-nginx-dc
     build:
       context: .
       dockerfile: Dockerfile.nginx_ubt
-      args:
-        LOCAL_IP: "110.165.17.207" # 원래는 도메인 주소 값
+      # args:
+      #   LOCAL_IP: "110.165.17.207" # 원래는 도메인 주소 값
     image: lion-nginx
     ports:
       - "8888:80"
     volumes:
-      - static:/var/www/html/static
+      - staticfiles:/var/www/html/static
+    env_file: # nginx 컨테이너에도 같은 환경변수가 들어가게 됨
+      - ./prod.env
 
 volumes:
-  static:
-  lion_static:
+  staticfiles:
+

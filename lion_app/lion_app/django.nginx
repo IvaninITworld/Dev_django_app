@@ -1,7 +1,7 @@
 server {
 	listen 80;
 	# server_name http 223.130.133.96;
-	server_name localhost;
+	server_name localhost $LOCAL_IP;
 
 	location / {
 		# 아래의 코드로는 nginx가 실행된 컨테이너의 주소로 보내기 때문에 Bad request 가 뜬다.
