@@ -1,4 +1,4 @@
-# Local docker-compose
+# productuoj docker-compose
 # docker-compose 파일의 버전을 명시
 version: "3"
 
@@ -18,7 +18,7 @@ services: # 서비스들의 시작
     command:
       - "/start"
     env_file:
-      - ./.env
+      - ./prod.env
 
   nginx:
     depends_on:
@@ -35,7 +35,7 @@ services: # 서비스들의 시작
     volumes:
       - staticfiles:/var/www/html/static
     env_file: # nginx 컨테이너에도 같은 환경변수가 들어가게 됨
-      - ./.env
+      - ./prod.env
 
 volumes:
   staticfiles:
