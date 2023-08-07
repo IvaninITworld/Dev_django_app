@@ -20,7 +20,9 @@ services: # 서비스들의 시작
     command:
       - "/start"
     env_file:
-      - ./prod.env
+      - ./.envs/prod/django
+      - ./.envs/prod/db
+      - ./.envs/prod/server
 
   nginx:
     restart: always
@@ -38,17 +40,20 @@ services: # 서비스들의 시작
     volumes:
       - staticfiles:/var/www/html/static
     env_file: # nginx 컨테이너에도 같은 환경변수가 들어가게 됨
-      - ./prod.env
+     - ./.envs/prod/server
 
   db:
     image: postgres:15
     env_file:
-      - ./.env
+      - ./.envs/prod/db
     ports:
       - "15432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
 
 
 
 volumes:
   staticfiles:
+  postgres_data:
 

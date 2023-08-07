@@ -1,0 +1,29 @@
+#!/bin/sh
+
+postgres_ready() {
+    python3 << END
+    improt sys
+    import psycopg2
+
+    try:
+        psycopg2.connect(
+            dbname="${POSTGRES_DB}",
+            user="${POSTGRES_USER}",
+            password="${POSTGRES_PASSWORD}",
+            host="${DB_HOST}",
+            port=5432,
+        )
+    except psycopg2.OperationalError:
+        sys.exit(-1)
+    sys.exit(0)
+END
+}
+
+
+until postgres_ready; do # true 가 될 떄 까지 반복
+    >&2 echo "Waiting for PostgreSQL to become available..."
+    sleep 1
+done
+
+# >&2 -> 표준에러를 결과물에 넣겠다
+>&2 echo "PostgreSQL is available"
