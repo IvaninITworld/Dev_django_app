@@ -24,6 +24,8 @@ services: # 서비스들의 시작
     build:
       context: .
       dockerfile: Dockerfile.nginx_ubt
+      args:
+        LOCAL_IP: "110.165.17.207" # 원래는 도메인 주소 값
     image: lion-nginx
     ports:
       - "8888:80"

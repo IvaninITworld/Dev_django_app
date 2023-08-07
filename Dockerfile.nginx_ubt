@@ -1,6 +1,9 @@
 FROM ubuntu:22.04
 # LABEL likelion.web.backendauthor="Ivan Kim <xormrdlsrks2@gmail.com>"
 
+ARG LOCAL_IP
+ENV SERVER_NAME $LOCAL_IP
+
 RUN apt-get update
 RUN apt-get install -y nginx vim
 
@@ -8,7 +11,19 @@ RUN echo "\ndaemon off;" >> /etc/nginx/nginx.conf
 RUN chown -R www-data:www-data /var/lib/nginx
 
 # nginx.conf 파일을 컨테이너로 가져가
-COPY ./lion_app/lion_app/django.nginx /etc/nginx/sites-available/django
+# COPY ./lion_app/lion_app/django.nginx /etc/nginx/sites-available/django
+
+RUN echo "server {\n\
+    listen 80;\n\
+    server_name localhost ${SERVER_NAME};\n\
+\ㅜ\
+    location / {\n\
+        proxy_pass http://lion-app:8000;\n\
+		proxy_set_header Host \$host;\n\
+		proxy_set_header X-Real-IP \$remote_addr;\n\
+    }\n\
+}" >> /etc/nginx/sites-available/django
+
 RUN ln -s /etc/nginx/sites-available/django /etc/nginx/sites-enabled/django
 
 # VOLUME [ "/data", "/etc/nginx/sites-enabled", "/var/log/nginx" ]
