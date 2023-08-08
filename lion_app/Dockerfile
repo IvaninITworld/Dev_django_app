@@ -19,10 +19,17 @@ RUN pip install --no-cache-dir -r requirements.txt
 
 COPY . ${APP_HOME}
 
+COPY ./scripts/start /start
+RUN sed -i 's/\r$//g' /start
+# \r : 캐리지 리턴
+RUN chmod +x /start
+
 COPY ./scripts/entrypoint /entrypoint
+# entrypoint 파일 실행
 RUN sed -i 's/\r$//g' /entrypoint
 # \r : 캐리지 리턴
 RUN chmod +x /entrypoint
+
 
 # RUN python3 manage.py migrate -> entypoint 스크립트로 대체
 
@@ -32,4 +39,5 @@ RUN python3 manage.py collectstatic -c
 
 # CMD ["gunicorn", "lion_app.wsgi:application", "--config", "lion_app/gunicorn_config.py"] -> start 스크립트로 대체
 
+ENTRYPOINT [ "/entrypoint" ]
 CMD [ "python", "--version" ]
