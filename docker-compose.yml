@@ -43,6 +43,7 @@ services: # 서비스들의 시작
       - ./.envs/local/server
 
   db:
+    container_name: postgres
     image: postgres:15
     env_file:
       - ./.envs/local/db
@@ -51,7 +52,17 @@ services: # 서비스들의 시작
     volumes:
       - postgres_data:/var/lib/postgresql/data
 
+  mongo:
+    container_name: mongo
+    image: mongo:latest
+    ports:
+      - 27017:27017
+    volumes:
+      - mongo_data:/data/db
+
+
 volumes:
   staticfiles:
   postgres_data:
+  mongo_data:
 

@@ -52,10 +52,14 @@ INSTALLED_APPS = [
 ## Created Apps
 INSTALLED_APPS += [
     'forumapp',
+    'blog',
+    'quickstart',
 ]
 
 ## Third party Apps
-INSTALLED_APPS += []
+INSTALLED_APPS += [
+    'rest_framework',
+]
 
 
 MIDDLEWARE = [
@@ -103,7 +107,7 @@ DATABASES = {
         'NAME': os.getenv('POSTGRES_DB', 'postgres'),
         'USER': os.getenv('POSTGRES_USER', 'postgres'),
         'PASSWORD': os.getenv('POSTGRES_PASSWORD', 'postgres'),
-        'HOST': os.getenv('DB_HOST', 'db'),
+        'HOST': os.getenv('DB_HOST', 'postgres'),
     }
 }
 
@@ -154,3 +158,10 @@ STATIC_ROOT = '/var/www/html/static'
 # https://docs.djangoproject.com/en/4.2/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+
+# Quick start for DRF
+REST_FRAMEWORK = {
+    "DEFAULT_PAGINATION_CLASS" : "rest_framework.pagination.PageNumberPagination",
+    "PAGE_SIZE" : 10,
+}
