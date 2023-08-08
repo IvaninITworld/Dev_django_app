@@ -35,7 +35,7 @@ ALLOWED_HOSTS = [
 
 CSRF_TRUSTED_ORIGINS = [
     "http://localhost:8888",
-    f"http://{LOCAL_IP:8888}",
+    f"http://{LOCAL_IP}:8888",
 ]
 
 # Application definition
