@@ -1,4 +1,3 @@
-import os
 
 from rest_framework import serializers
 from .models import Topic, Post
@@ -10,6 +9,18 @@ class TopicSerializer(serializers.ModelSerializer):
         fields = "__all__"
         
         # 유저가 수정하면 안되는 부분들을 정리
+        read_only_fields =(
+            "id",
+            "created_at",
+            "updated_at",
+        )
+
+
+class PostSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Post
+        fields = "__all__"
+
         read_only_fields =(
             "id",
             "created_at",

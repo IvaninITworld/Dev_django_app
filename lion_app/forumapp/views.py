@@ -1,7 +1,7 @@
 from rest_framework import viewsets
 
 from .models import Topic, Post
-from .serializers import TopicSerializer
+from .serializers import TopicSerializer, PostSerializer
 
 # 모델 뷰셋 사용
 class TopicViewSet(viewsets.ModelViewSet):
@@ -10,3 +10,7 @@ class TopicViewSet(viewsets.ModelViewSet):
     queryset = Topic.objects.all()
     # 어떤 시리얼라이저 쓸꺼니?
     serializer_class = TopicSerializer
+
+class PostViewSet(viewsets.ModelViewSet):
+    queryset = Post.objects.all()
+    serializer_class = PostSerializer
