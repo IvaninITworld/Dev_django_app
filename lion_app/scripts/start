@@ -1,5 +1,7 @@
 #!/bin/sh
 # 파이썬 알파인을 쓰기 떄문에 bash 조차 없다.. 그래서 sh 로
 
+python3 manage.py collectstatic --no-input
+
 python3 manage.py migrate
 gunicorn lion_app.wsgi:application --config lion_app/gunicorn_config.py

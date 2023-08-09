@@ -23,6 +23,8 @@ services: # 서비스들의 시작
       - ./.envs/prod/django
       - ./.envs/prod/db
       - ./.envs/prod/server
+    environment:
+      - AWS_SECRET_NAME=like/lion/lecture
 
   nginx:
     restart: always

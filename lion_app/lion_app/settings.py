@@ -12,9 +12,14 @@ https://docs.djangoproject.com/en/4.2/ref/settings/
 import os
 from pathlib import Path
 
+from common.aws import get_secret
+
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
+AWS_SECRET_NAME= os.getenv("AWS_SECRET_NAME", "like/lion/lecture")
+
+secret = get_secret(AWS_SECRET_NAME)
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/4.2/howto/deployment/checklist/
@@ -52,13 +57,14 @@ INSTALLED_APPS = [
 ## Created Apps
 INSTALLED_APPS += [
     'forumapp',
-    'blog',
-    'quickstart',
+    # 'blog',
+    # 'quickstart',
 ]
 
 ## Third party Apps
 INSTALLED_APPS += [
     'rest_framework',
+    'drf_spectacular',
 ]
 
 
@@ -102,12 +108,23 @@ DATABASES = {
     #     'NAME': BASE_DIR / 'db.sqlite3',
     # }
 
+    # 'default': {
+    #     'ENGINE': 'django.db.backends.postgresql',
+    #     'NAME': os.getenv('POSTGRES_DB', 'postgres'),
+    #     'USER': os.getenv('POSTGRES_USER', 'postgres'),
+    #     'PASSWORD': os.getenv('POSTGRES_PASSWORD', 'postgres'),
+    #     'HOST': os.getenv('DB_HOST', 'db'),
+    # }
+
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
-        'NAME': os.getenv('POSTGRES_DB', 'postgres'),
-        'USER': os.getenv('POSTGRES_USER', 'postgres'),
-        'PASSWORD': os.getenv('POSTGRES_PASSWORD', 'postgres'),
-        'HOST': os.getenv('DB_HOST', 'db'),
+        'NAME': secret.get('dbname', 'postgres'),
+        'USER': secret.get('username', 'postgres'),
+        'PASSWORD': secret.get('password', 'postgres'),
+        'HOST': secret.get('host', 'db'),
+        'OPTIONS' : {
+            'options': '-c search_path=likelion,public'  
+        },
     }
 }
 
@@ -160,8 +177,25 @@ STATIC_ROOT = '/var/www/html/static'
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 
-# Quick start for DRF
+
 REST_FRAMEWORK = {
+    # Quick start for DRF
     "DEFAULT_PAGINATION_CLASS" : "rest_framework.pagination.PageNumberPagination",
     "PAGE_SIZE" : 10,
+
+    # Use Django's standard `django.contrib.auth` permissions,
+    # or allow read-only access for unauthenticated users.
+    'DEFAULT_PERMISSION_CLASSES': [
+        'rest_framework.permissions.DjangoModelPermissionsOrAnonReadOnly'
+    ],
+
+     'DEFAULT_SCHEMA_CLASS': 'drf_spectacular.openapi.AutoSchema',
+}
+
+SPECTACULAR_SETTINGS = {
+    'TITLE': 'Your Project API',
+    'DESCRIPTION': 'Your project description',
+    'VERSION': '1.0.0',
+    'SERVE_INCLUDE_SCHEMA': False,
+    # OTHER SETTINGS
 }

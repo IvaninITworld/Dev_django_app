@@ -1,6 +1,8 @@
 Django==4.2.3
 gunicorn==21.2.0
-psycopg2-binary==2.9.7
+psycopg2-binary==2.9.7 # PostgreSQL
 
-pymongo==4.4.1
+pymongo==4.4.1 # MongoDB
 djangorestframework==3.14.0
+drf-spectacular==0.26.4 # for API documents
+boto3==1.28.22 # AWS python SDK
