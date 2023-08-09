@@ -15,6 +15,7 @@ services: # 서비스들의 시작
     ports:
       - "8000:8000" # 앞쪽이 호스트 시스템의 포트 : 뒤쬑이 컨테이너의 포트
     volumes:
+      - ~/.aws:/root/.aws:ro # read only 
       - ./lion_app:/app
       - staticfiles:/var/www/html/static
     command:
