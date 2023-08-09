@@ -33,11 +33,11 @@ def get_secret(secret_name:str) -> dict:
     # Decrypts secret using the associated KMS key.
     secret = get_secret_value_response['SecretString']
 
-    print("secret: ", secret)
-    print("type of secret: ", type(secret))
+    # print("secret: ", secret)
+    # print("type of secret: ", type(secret))
 
-    print("secret: ", json.loads(secret))
-    print("type of secret: ", type(json.loads(secret)))
+    # print("secret: ", json.loads(secret))
+    # print("type of secret: ", type(json.loads(secret)))
 
     # Your code goes here.
     return json.loads(secret)

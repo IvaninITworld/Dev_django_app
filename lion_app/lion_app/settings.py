@@ -19,7 +19,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 
 AWS_SECRET_NAME= os.getenv("AWS_SECRET_NAME", "like/lion/lecture")
 
-secret = get_secret(AWS_SECRET_NAME)
+# secret = get_secret(AWS_SECRET_NAME)
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/4.2/howto/deployment/checklist/
@@ -108,24 +108,25 @@ DATABASES = {
     #     'NAME': BASE_DIR / 'db.sqlite3',
     # }
 
-    # 'default': {
-    #     'ENGINE': 'django.db.backends.postgresql',
-    #     'NAME': os.getenv('POSTGRES_DB', 'postgres'),
-    #     'USER': os.getenv('POSTGRES_USER', 'postgres'),
-    #     'PASSWORD': os.getenv('POSTGRES_PASSWORD', 'postgres'),
-    #     'HOST': os.getenv('DB_HOST', 'db'),
-    # }
-
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
-        'NAME': secret.get('dbname', 'postgres'),
-        'USER': secret.get('username', 'postgres'),
-        'PASSWORD': secret.get('password', 'postgres'),
-        'HOST': secret.get('host', 'db'),
-        'OPTIONS' : {
-            'options': '-c search_path=likelion,public'  
-        },
+        'NAME': os.getenv('POSTGRES_DB', 'postgres'),
+        'USER': os.getenv('POSTGRES_USER', 'postgres'),
+        'PASSWORD': os.getenv('POSTGRES_PASSWORD', 'postgres'),
+        'HOST': os.getenv('DB_HOST', 'db'),
     }
+    
+    # AWS
+    # 'default': {
+    #     'ENGINE': 'django.db.backends.postgresql',
+    #     'NAME': secret.get('dbname', 'postgres'),
+    #     'USER': secret.get('username', 'postgres'),
+    #     'PASSWORD': secret.get('password', 'postgres'),
+    #     'HOST': secret.get('host', 'db'),
+    #     'OPTIONS' : {
+    #         'options': '-c search_path=likelion,public'  
+    #     },
+    # }
 }
 
 
