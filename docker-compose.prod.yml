@@ -24,7 +24,7 @@ services: # 서비스들의 시작
       - ./.envs/prod/db
       - ./.envs/prod/server
     environment:
-      - AWS_SECRET_NAME=like/lion/lecture
+      - AWS_SECRET_NAME=like/lion/prod
 
   nginx:
     restart: always
