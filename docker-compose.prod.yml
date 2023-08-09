@@ -5,8 +5,8 @@ version: "3"
 services: # 서비스들의 시작
   # 앱 설정
   lion-app:
-    depends_on:
-      - db
+    # depends_on:
+    #   - db
     container_name: lion-app-dc
     build:
       context: lion_app
@@ -42,18 +42,24 @@ services: # 서비스들의 시작
     env_file: # nginx 컨테이너에도 같은 환경변수가 들어가게 됨
      - ./.envs/prod/server
 
-  db:
-    image: postgres:15
-    env_file:
-      - ./.envs/prod/db
-    ports:
-      - "15432:5432"
-    volumes:
-      - postgres_data:/var/lib/postgresql/data
+  # db:
+  #   image: postgres:15
+  #   env_file:
+  #     - ./.envs/prod/db
+  #   ports:
+  #     - "15432:5432"
+  #   volumes:
+  #     - postgres_data:/var/lib/postgresql/data
 
-
+  # mongo:
+  #   container_name: mongo
+  #   image: mongo:latest
+  #   ports:
+  #     - 27017:27017
+  #   volumes:
+  #     - mongo_data:/data/db
 
 volumes:
   staticfiles:
-  postgres_data:
+
 
