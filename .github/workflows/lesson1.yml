@@ -41,14 +41,14 @@ jobs:
         - name: Build and Export
           uses: docker/build-push-action@v4
           with:
-            context: .
+            context: lion_app
             tags: lion-app:latest
             outputs: type=docker,dest=/tmp/lion_app.tar
         - name: Upload artifact
           uses: actions/upload-artifact@v3
           with:
             name: lion-app
-            path: tmp/lion_app.tar
+            path: /tmp/lion_app.tar
         - name: docker images
           if: ${{ always() }}
           run: docker images lion-app
