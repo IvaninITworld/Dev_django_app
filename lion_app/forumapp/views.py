@@ -5,6 +5,7 @@ from .models import Topic, Post
 from .serializers import TopicSerializer, PostSerializer
 
 # 모델 뷰셋 사용
+@extend_schema(tags=("Topic"))
 class TopicViewSet(viewsets.ModelViewSet):
     # 어떤 모델 오브젝트를 쓸꺼니? 
     # all() -> create ~ list ~ 전부 알아서 작성됨
