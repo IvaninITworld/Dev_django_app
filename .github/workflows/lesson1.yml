@@ -43,7 +43,7 @@ jobs:
           with:
             context: lion_app
             tags: lion-app:latest
-            outputs: type=docker,dest=/tem/lion_app.tar
+            outputs: type=docker,dest=/tmp/lion_app.tar
         - name: Upload artifact
           uses: actions/upload-artifact@v3
           with:
@@ -68,7 +68,7 @@ jobs:
             path: /tmp
         - name: Load image
           run: |
-            docker load --input /tmp/myimage.tar
+            docker load --input /tmp/lion_app.tar
         - name: docker images
           run: |
             docker images lion-app
