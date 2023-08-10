@@ -12,3 +12,6 @@ jobs:
     steps:
       - name: get event
         run: echo "This event is ${{github.event_name}}"
+
+      - name: echo github context
+        run: echo "${{github.repositoryUrl}}"
