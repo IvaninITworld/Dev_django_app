@@ -19,6 +19,9 @@ jobs:
                 script: |
                     cd dev_django_app
                     git pull
+            - name: docker-compose restart
+              run: |
+                docker-compose -f docker-compose.prod.yml restart
 
 
             
