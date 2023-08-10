@@ -41,7 +41,7 @@ jobs:
         - name: Build and Export
           uses: docker/build-push-action@v4
           with:
-            context: lion_app
+            context: .
             tags: lion-app:latest
             outputs: type=docker,dest=/tmp/lion_app.tar
         - name: Upload artifact
