@@ -46,10 +46,10 @@ jobs:
                   script: |
                       cd dev_django_app
                       git pull
-                      docker login ${{ secrets.NCP_CONTAINER_REGISTRY }}
+                      echo "${{ secrets.NCP_SECRET_KEY }}" | docker login ${{ secrets.NCP_CONTAINER_REGISTRY }} --username ${{ secrets.NCP_ACCESS_KEY }} --password-stdin
                       docker pull ${{ secrets.NCP_CONTAINER_REGISTRY }}/lion-app:latest
                       docker-compose -f docker-compose.prod.yml up --build -d
-    
+                      
     # pull_from_ncp:
     #     name: Connect to Server via SSH and pull from NCP
     #     needs: deployment
