@@ -36,20 +36,32 @@ jobs:
                 push: true
                 tags: ${{ secrets.NCP_CONTAINER_REGISTRY }}/lion-app:latest
                 # outputs: type=docker,dest=/tmp/lion_app.tar
-    
-    pull_from_ncp:
-        name: Connect to Server via SSH and pull from NCP
-        needs: deployment
-        runs-on: ubuntu-latest
-        steps:
+
             - name: git pull via SSH
               uses: appleboy/ssh-action@v1.0.0
               with:
-                host: ${{ secrets.HOST }}
-                username: ${{ secrets.USERNAME }}
-                password: ${{ secrets.PASSWORD }}
-                script: |
-                    cd dev_django_app
-                    git pull
-                    docker pull ${{ secrets.NCP_CONTAINER_REGISTRY }}/lion-app:latest
-                    docker-compose -f docker-compose.prod.yml restart lion-app
+                  host: ${{ secrets.HOST }}
+                  username: ${{ secrets.USERNAME }}
+                  password: ${{ secrets.PASSWORD }}
+                  script: |
+                      cd dev_django_app
+                      git pull
+                      docker pull ${{ secrets.NCP_CONTAINER_REGISTRY }}/lion-app:latest
+                      docker-compose -f docker-compose.prod.yml up --build -d
+    
+    # pull_from_ncp:
+    #     name: Connect to Server via SSH and pull from NCP
+    #     needs: deployment
+    #     runs-on: ubuntu-latest
+    #     steps:
+    #         - name: git pull via SSH
+    #           uses: appleboy/ssh-action@v1.0.0
+    #           with:
+    #             host: ${{ secrets.HOST }}
+    #             username: ${{ secrets.USERNAME }}
+    #             password: ${{ secrets.PASSWORD }}
+    #             script: |
+    #                 cd dev_django_app
+    #                 git pull
+    #                 docker pull ${{ secrets.NCP_CONTAINER_REGISTRY }}/lion-app:latest
+    #                 docker-compose -f docker-compose.prod.yml restart lion-app
