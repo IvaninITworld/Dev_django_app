@@ -1,9 +1,10 @@
-name: CD
+name: CD by git pull
 
 on:
-    push:
-        branches:
-            - main
+    workflow_dispatch: # from now on, this file is not in automation process
+    # push:
+    #     branches:
+    #         - main
 
 jobs:
     deployment:
