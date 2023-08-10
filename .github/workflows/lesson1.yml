@@ -37,6 +37,9 @@ jobs:
     steps:
         - uses: actions/checkout@v3
         - name: build
+          working-directory: lion_app # Define where to execute below code
           run: |
-            cd lion_app
             docker build --tag lion-app .
+
+        - name: docker image
+          run: docker images lion-app # To check if it is created
