@@ -37,7 +37,7 @@ jobs:
     steps:
         - uses: actions/checkout@v3
         - name: build
-          continue-on-error: true # Continue even if build fails
+          # continue-on-error: true # Continue even if build fails
           working-directory: lion-app # Define where to execute below code
           run: |
             docker build --tag lion-app .
@@ -46,12 +46,12 @@ jobs:
           run: docker images lion-app # To check if it is created
 
 
-  # docker-images:
-  #   # Always execute the bleow
-  #   if: ${{ always() }} 
-  #   needs: docker-build
-  #   name: docker iamges
-  #   runs-on: ubuntu-latest
-  #   steps:
-  #       - name: docker images
-  #         run: docker images lion-app
+  docker-images:
+    # Always execute the bleow
+    if: ${{ always() }} 
+    needs: docker-build
+    name: docker iamges
+    runs-on: ubuntu-latest
+    steps:
+        - name: docker images
+          run: docker images lion-app
