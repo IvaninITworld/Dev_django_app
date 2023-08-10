@@ -22,4 +22,7 @@ jobs:
     steps:
         - uses: actions/checkout@v3
         - name: list files
-          run: ls -al
+          run: | 
+            ls -al
+            docker-compose -f docker-compose.yml up --build -d
+            
