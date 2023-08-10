@@ -48,7 +48,7 @@ jobs:
           uses: actions/upload-artifact@v3
           with:
             name: lion-app
-            path: tmp/myimage.tar
+            path: tmp/lion_app.tar
         - name: docker images
           if: ${{ always() }}
           run: docker images lion-app
