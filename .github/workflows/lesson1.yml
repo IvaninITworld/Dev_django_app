@@ -42,8 +42,13 @@ jobs:
           run: |
             docker build --tag lion-app .
 
-        - name: docker image
-          run: docker images lion-app # To check if it is created
+        # - name: docker image
+        #   run: docker images lion-app # To check if it is created
+        - name: Upload artifact
+          uses: actions/upload-artifact@v3
+          with:
+            name: myimage
+            path: /tmp/myiamge.tar
 
 
   docker-images:
@@ -53,5 +58,11 @@ jobs:
     name: docker iamges
     runs-on: ubuntu-latest
     steps:
+        - name: Download artifact
+          uses: actions/download-artifact@v3
+          with:
+            name: myimage
+            path: tmp
+            
         - name: docker images
           run: docker images lion-app
