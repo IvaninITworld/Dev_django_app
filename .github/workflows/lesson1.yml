@@ -64,5 +64,7 @@ jobs:
             name: myimage
             path: /tmp
 
-        - name: docker images
-          run: docker images lion-app
+        - name: Load and run docker images
+          run: |
+            docker load --input /tmp/myimage.tar
+            docker images lion-app
