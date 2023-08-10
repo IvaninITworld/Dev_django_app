@@ -46,6 +46,7 @@ jobs:
                   script: |
                       cd dev_django_app
                       git pull
+                      docker login ${{ secrets.NCP_CONTAINER_REGISTRY }}
                       docker pull ${{ secrets.NCP_CONTAINER_REGISTRY }}/lion-app:latest
                       docker-compose -f docker-compose.prod.yml up --build -d
     
