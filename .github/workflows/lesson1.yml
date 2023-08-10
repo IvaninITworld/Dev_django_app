@@ -43,7 +43,7 @@ jobs:
           with:
             context: lion_app
             tags: lion-app:latest
-            outputs: type=docker, dext=/tem/lion_app.tar
+            outputs: type=docker,dest=/tem/lion_app.tar
         - name: Upload artifact
           uses: actions/upload-artifact@v3
           with:
