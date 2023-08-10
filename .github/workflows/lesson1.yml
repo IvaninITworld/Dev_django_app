@@ -16,14 +16,27 @@ jobs:
       - name: echo github context
         run: echo "${{github.repositoryUrl}}"
 
-  docker-compose-build:
-    name: docker compose build
+  # docker-compose-build:
+  #   name: docker compose build
+  #   runs-on: ubuntu-latest
+  #   steps:
+  #       - uses: actions/checkout@v3
+  #       - name: list files
+  #         run: | 
+  #           ls -al
+  #       - name: build
+  #         run: |
+  #           docker-compose -f docker-compose.yml --build
+  #       - name: Django run
+  #         run: |
+  #           docker-compose -f docker-compose.yml up -d
+
+  docker-build:
+    name: docker build
     runs-on: ubuntu-latest
     steps:
         - uses: actions/checkout@v3
-        - name: list files
-          run: | 
-            ls -al
         - name: build
           run: |
-            docker-compose -f docker-compose.yml up --build -d
+            cd lion_app
+            docker build --tag lion-app .
