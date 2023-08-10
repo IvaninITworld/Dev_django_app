@@ -1,8 +1,9 @@
 name: lesson1
 
 on:
-  push:
-  pull_request:
+  workflow_dispatch: # from now on, this file is not in automation process
+  # push:
+  # pull_request:
 
 
 jobs:
