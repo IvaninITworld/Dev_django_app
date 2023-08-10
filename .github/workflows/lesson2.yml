@@ -17,12 +17,9 @@ jobs:
                 username: ${{ secrets.USERNAME }}
                 password: ${{ secrets.PASSWORD }}
                 script: |
+                    cd dev_django_app
                     git pull
-            - name: docker-compose restart
-              run: |
-                pwd
-                docker-compose -f docker-compose.prod.yml restart
-                docker ps
+                    docker-compose -f docker-compose.prod.yml restart
 
 
             
