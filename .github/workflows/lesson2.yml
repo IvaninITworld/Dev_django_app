@@ -13,7 +13,7 @@ jobs:
             - uses: actions/checkout@v3
             - name: git pull via SSH
               uses: appleboy/ssh-action@v1.0.0
-              with:
+              with: # 이 부분은 컨테이너가 만들어지기 전에 읽히는 부분이
                 host: ${{ secrets.HOST }}
                 username: ${{ secrets.USERNAME }}
                 password: ${{ secrets.PASSWORD }}

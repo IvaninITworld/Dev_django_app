@@ -16,7 +16,8 @@ services: # 서비스들의 시작
       - "8000:8000" # 앞쪽이 호스트 시스템의 포트 : 뒤쬑이 컨테이너의 포트
     volumes:
       - ~/.aws:/root/.aws:ro # read only 
-      - ./lion_app:/app
+      # - ./lion_app:/app # docker 이미지를 github actions 에서 가져오게 되는데,
+      # 위 코드를 실행하면 최신 이미지를 이전 이미지 파일이 덮어 쓰게 되니 삭제해 준다.
       - staticfiles:/var/www/html/static
     command:
       - "/start"

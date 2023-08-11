@@ -5,6 +5,10 @@ on:
         branches:
             -
                 main
+
+env:
+    IMAGE_TAG: ${{ vars.NCP_CONTAINER_REGISTRY }}/lion-app:latest
+
 jobs:
     # build image / push image to NCR
     # pull Image from NCR / Run new container with new image
@@ -26,7 +30,7 @@ jobs:
               uses: docker/login-action@v2
               with:
                 # registry: where to login
-                registry: ${{ secrets.NCP_CONTAINER_REGISTRY }}
+                registry: ${{ vars.NCP_CONTAINER_REGISTRY }}
                 username: ${{ secrets.NCP_ACCESS_KEY }}
                 password: ${{ secrets.NCP_SECRET_KEY }}
             
@@ -35,35 +39,36 @@ jobs:
               with:
                 context: lion_app # location where image will be built
                 push: true # This indicates push event
-                tags: ${{ secrets.NCP_CONTAINER_REGISTRY }}/lion-app:latest
+                tags: ${{ env.IMAGE_TAG }}
                 # outputs: type=docker,dest=/tmp/lion_app.tar
 
+            # - name: git pull via SSH
+            #   uses: appleboy/ssh-action@v1.0.0
+            #   with:
+            #       host: ${{ secrets.HOST }}
+            #       username: ${{ secrets.USERNAME }}
+            #       password: ${{ secrets.PASSWORD }}
+            #       script: | # while actions is running, please use options !
+            #           cd dev_django_app
+            #           git pull
+            #           echo "${{ secrets.NCP_SECRET_KEY }}" | dockers login ${{ vars.NCP_CONTAINER_REGISTRY }} --username ${{ secrets.NCP_ACCESS_KEY }} --password-stdin
+            #           docker pull ${{ env.IMAGE_TAG }}
+            #           docker-compose -f docker-compose.prod.yml up --build -d
+                      
+    pull_from_ncp:
+        name: Connect to Server via SSH and pull from NCP
+        needs: deployment
+        runs-on: ubuntu-latest
+        steps:
             - name: git pull via SSH
               uses: appleboy/ssh-action@v1.0.0
               with:
-                  host: ${{ secrets.HOST }}
-                  username: ${{ secrets.USERNAME }}
-                  password: ${{ secrets.PASSWORD }}
-                  script: |
-                      cd dev_django_app
-                      git pull
-                      echo "${{ secrets.NCP_SECRET_KEY }}" | docker login ${{ secrets.NCP_CONTAINER_REGISTRY }} --username ${{ secrets.NCP_ACCESS_KEY }} --password-stdin
-                      docker pull ${{ secrets.NCP_CONTAINER_REGISTRY }}/lion-app:latest
-                      docker-compose -f docker-compose.prod.yml up --build -d
-                      
-    # pull_from_ncp:
-    #     name: Connect to Server via SSH and pull from NCP
-    #     needs: deployment
-    #     runs-on: ubuntu-latest
-    #     steps:
-    #         - name: git pull via SSH
-    #           uses: appleboy/ssh-action@v1.0.0
-    #           with:
-    #             host: ${{ secrets.HOST }}
-    #             username: ${{ secrets.USERNAME }}
-    #             password: ${{ secrets.PASSWORD }}
-    #             script: |
-    #                 cd dev_django_app
-    #                 git pull
-    #                 docker pull ${{ secrets.NCP_CONTAINER_REGISTRY }}/lion-app:latest
-    #                 docker-compose -f docker-compose.prod.yml restart lion-app
+                host: ${{ secrets.HOST }}
+                username: ${{ secrets.USERNAME }}
+                password: ${{ secrets.PASSWORD }}
+                script: | # while actions is running, please use options !
+                    cd dev_django_app
+                    git pull
+                    echo "${{ secrets.NCP_SECRET_KEY }}" | dockers login ${{ vars.NCP_CONTAINER_REGISTRY }} --username ${{ secrets.NCP_ACCESS_KEY }} --password-stdin
+                    docker pull ${{ env.IMAGE_TAG }}
+                    docker-compose -f docker-compose.prod.yml up --build -d
