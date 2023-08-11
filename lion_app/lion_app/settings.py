@@ -35,8 +35,8 @@ LOCAL_IP = os.getenv('LOCAL_IP', '')
 ALLOWED_HOSTS = [
     "localhost",
     "127.0.0.1",
-    "http://lion-lb-18904316-04e720249f4d.kr.lb.naverncp.com/", # Load balancer
-    "http://101.79.14.79/", # Load balancer
+    "lion-lb-18904316-04e720249f4d.kr.lb.naverncp.com", # Load balancer
+    "101.79.14.79", # Load balancer
     # LOCAL_IP,
 ]
 
