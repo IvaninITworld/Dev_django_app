@@ -11,7 +11,7 @@ services: # 서비스들의 시작
     build:
       context: lion_app
       dockerfile: Dockerfile # 사용할 도커 파일의 이름
-    image: likelion-cr-mh.kr.ncr.ntruss.com/lion-app
+    image: likelion-cr-mh.kr.ncr.ntruss.com/lion-app:latest
     ports:
       - "8000:8000" # 앞쪽이 호스트 시스템의 포트 : 뒤쬑이 컨테이너의 포트
     volumes:
