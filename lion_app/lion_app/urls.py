@@ -21,7 +21,7 @@ urlpatterns = [
     # Optional UI:
     # api 문서를 읽을 수 있는
     path('api/docs/', SpectacularSwaggerView.as_view(url_name='api-schema'), name='api-swagger-ui'),
-] + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
+] + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT) # static 파일을 얹어줘
 
 
 

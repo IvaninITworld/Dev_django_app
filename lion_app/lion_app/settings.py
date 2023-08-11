@@ -40,7 +40,9 @@ ALLOWED_HOSTS = [
 
 CSRF_TRUSTED_ORIGINS = [
     "http://localhost:8888",
-    f"http://{LOCAL_IP}:8888",
+    # f"http://{LOCAL_IP}:8888",
+    "http://lion-lb-18904316-04e720249f4d.kr.lb.naverncp.com/", # Load balancer
+    "http://101.79.14.79/", # Load balancer
 ]
 
 # Application definition
