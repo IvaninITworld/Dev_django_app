@@ -67,4 +67,13 @@ jobs:
                     git pull
                     echo "${{ secrets.NCP_SECRET_KEY }}" | dockers login ${{ vars.NCP_CONTAINER_REGISTRY }} --username ${{ secrets.NCP_ACCESS_KEY }} --password-stdin
                     docker pull ${{ env.IMAGE_TAG }}
-                    docker-compose -f docker-compose.prod.yml up --build -d
+                    # docker-compose -f docker-compose.prod.yml up --build -d
+                    docker stop <> && docker rm <>
+                    docker run -p 8000:8000 -d \
+                    -v ~/.aws:/root/.aws:ro \
+                    --env-file .envs/prod/django --env-file .envs/prod/db --env-file .envs/prod/server \
+                    --name lion-app-dc \
+                    ${{ env.IMAGE_TAG }} /start
+
+            - name: echo IMAGE_TAG
+              run: echo $IMAGE_TAG
