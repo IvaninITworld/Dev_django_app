@@ -10,10 +10,7 @@ env:
     IMAGE_TAG: ${{ vars.NCP_CONTAINER_REGISTRY }}/lion-app:latest
 
 jobs:
-    # build image / push image to NCR
-    # pull Image from NCR / Run new container with new image
-
-    deployment:
+    build_push_to_ncp:
         name: push to NCP container registry
         runs-on: ubuntu-latest
         steps:
@@ -40,7 +37,6 @@ jobs:
                 context: lion_app # location where image will be built
                 push: true # This indicates push event
                 tags: ${{ env.IMAGE_TAG }}
-                # outputs: type=docker,dest=/tmp/lion_app.tar
 
             # - name: git pull via SSH
             #   uses: appleboy/ssh-action@v1.0.0
@@ -57,7 +53,7 @@ jobs:
                       
     pull_from_ncp:
         name: Connect to Server via SSH and pull from NCP
-        needs: deployment
+        needs: build_push_to_ncp
         runs-on: ubuntu-latest
         steps:
             - name: git pull via SSH
