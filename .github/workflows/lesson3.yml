@@ -37,19 +37,6 @@ jobs:
                 context: lion_app # location where image will be built
                 push: true # This indicates push event
                 tags: ${{ env.IMAGE_TAG }}
-
-            # - name: git pull via SSH
-            #   uses: appleboy/ssh-action@v1.0.0
-            #   with:
-            #       host: ${{ secrets.HOST }}
-            #       username: ${{ secrets.USERNAME }}
-            #       password: ${{ secrets.PASSWORD }}
-            #       script: | # while actions is running, please use options !
-            #           cd dev_django_app
-            #           git pull
-            #           echo "${{ secrets.NCP_SECRET_KEY }}" | dockers login ${{ vars.NCP_CONTAINER_REGISTRY }} --username ${{ secrets.NCP_ACCESS_KEY }} --password-stdin
-            #           docker pull ${{ env.IMAGE_TAG }}
-            #           docker-compose -f docker-compose.prod.yml up --build -d
                       
     pull_from_ncp:
         name: Connect to Server via SSH and pull from NCP
@@ -68,7 +55,7 @@ jobs:
                     echo "${{ secrets.NCP_SECRET_KEY }}" | dockers login ${{ vars.NCP_CONTAINER_REGISTRY }} --username ${{ secrets.NCP_ACCESS_KEY }} --password-stdin
                     docker pull ${{ env.IMAGE_TAG }}
                     # docker-compose -f docker-compose.prod.yml up --build -d
-                    docker stop <> && docker rm <>
+                    docker stop lion-app-dc && docker rm lion-app-dc
                     docker run -p 8000:8000 -d \
                     -v ~/.aws:/root/.aws:ro \
                     --env-file .envs/prod/django --env-file .envs/prod/db --env-file .envs/prod/server \
