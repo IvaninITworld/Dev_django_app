@@ -73,7 +73,8 @@ jobs:
                     -v ~/.aws:/root/.aws:ro \
                     --env-file .envs/prod/django --env-file .envs/prod/db --env-file .envs/prod/server \
                     --name lion-app-dc \
-                    ${{ env.IMAGE_TAG }} /start
+                    ${{ env.IMAGE_TAG }} \
+                    /start
 
             - name: echo IMAGE_TAG
               run: echo $IMAGE_TAG
