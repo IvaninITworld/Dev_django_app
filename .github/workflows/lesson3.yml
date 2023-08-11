@@ -25,6 +25,7 @@ jobs:
             - name: Login to NCR
               uses: docker/login-action@v2
               with:
+                # registry: where to login
                 registry: ${{ secrets.NCP_CONTAINER_REGISTRY }}
                 username: ${{ secrets.NCP_ACCESS_KEY }}
                 password: ${{ secrets.NCP_SECRET_KEY }}
@@ -33,7 +34,7 @@ jobs:
               uses: docker/build-push-action@v4
               with:
                 context: lion_app # location where image will be built
-                push: true
+                push: true # This indicates push event
                 tags: ${{ secrets.NCP_CONTAINER_REGISTRY }}/lion-app:latest
                 # outputs: type=docker,dest=/tmp/lion_app.tar
 
