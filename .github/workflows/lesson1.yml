@@ -33,6 +33,7 @@ jobs:
   #           docker-compose -f docker-compose.yml up -d
 
   docker-build: # job name
+    if: ${{ !github.event.act }}
     name: docker build
     runs-on: ubuntu-latest
     steps:
@@ -60,7 +61,7 @@ jobs:
 
   docker-images:
     # Always execute the bleow
-    if: ${{ always() }} 
+    if: ${{ !github.event.act }} 
     needs: docker-build
     name: docker images
     runs-on: ubuntu-latest
