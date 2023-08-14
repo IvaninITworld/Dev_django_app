@@ -1,13 +1,13 @@
-name: workflow run lesson5
+name: workflow run
 
 on:
     workflow_run:
         workflows: ["called workflow"]
         types:
-            -   completed
+            - completed
 
 jobs:
-    echo:
+    on-success:
         runs-on: ubuntu-latest
         if: ${{ github.event.workflow_run.conclusion == 'success' }}
         steps:
