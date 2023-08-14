@@ -5,6 +5,9 @@ on:
   push:
     branches:
       - main
+    paths:
+      - .github/workflows/CD.yml
+      - lion_app/** # ** -> 아래 모든 파일, 하나만쓰면 바로 그 경로에 있는 내용들만 적용
 
 env:
     # IMAGE_TAG: ${{ vars.NCP_CONTAINER_REGISTRY }}/lion-app:latest

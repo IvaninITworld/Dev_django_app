@@ -9,4 +9,4 @@ jobs:
         runs-on: ubuntu-latest
         steps:
             -   name: greeting
-                run: echo "Hello, Stranger"ßß
+                run: echo "Hello, Stranger"ßßås
