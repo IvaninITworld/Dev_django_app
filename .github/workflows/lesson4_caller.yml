@@ -13,4 +13,5 @@ jobs:
 
     call-workflow:
         uses: ./.github/workflows/lesson4.yml
-        
+        with:
+            person: Ivan # with 으로 변수를 넘겨주는
