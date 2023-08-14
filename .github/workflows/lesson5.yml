@@ -9,5 +9,11 @@ on:
 jobs:
     echo:
         runs-on: ubuntu-latest
+        if: ${{ github.event.workflow_run.conclusion == 'success' }}
         steps:
             -   run: echo "workflow run triggerd"
+
+    on-failure:
+        runs-on: ubuntu-latest
+        steps:
+            -   run: echo "workflow failed"
