@@ -64,7 +64,7 @@ jobs:
                     # docker-compose -f docker-compose.prod.yml up --build -d
                     docker stop lion-app-dc && docker rm lion-app-dc
                     docker run -p 8000:8000 -d \
-                    -v ~/.aws:/root/.aws:ro \
+                    -v ~/.aws:/roßot/.aws:ro \
                     --env-file .envs/prod/django --env-file .envs/prod/db --env-file .envs/prod/server \
                     --name lion-app-dc \
                     ${{ env.IMAGE_TAG }} \
