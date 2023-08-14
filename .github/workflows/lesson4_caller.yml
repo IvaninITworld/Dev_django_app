@@ -8,7 +8,7 @@ jobs:
         name: echo workflow name
         runs-on: ubuntu-latest
         steps:
-            -   run: echo "This workflow is ${{ github.workflow }}"
+            - run: echo "This workflow is ${{ github.workflow }}"
 
 
     call-workflow:
