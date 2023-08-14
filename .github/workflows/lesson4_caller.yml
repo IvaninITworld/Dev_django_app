@@ -1,0 +1,16 @@
+name: call workflow
+
+on:
+    workflow_dispatch:
+
+jobs:
+    get-name:
+        name: echo name
+        runs-on: ubuntu-latest
+        steps:
+            -   run: ehco "This workflow is ${{ github.workflow }}"
+
+
+    call-workflow:
+        uses: ./.github/workflows/lesson4.yml
+        
