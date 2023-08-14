@@ -1,0 +1,13 @@
+name: workflow run lesson5
+
+on:
+    workflow_run:
+        workflows: ["called workflow"]
+        types:
+            -   completed
+
+jobs:
+    echo:
+        runs-on: ubuntu-latest
+        steps:
+            -   run: echo "workflow run triggerd"
