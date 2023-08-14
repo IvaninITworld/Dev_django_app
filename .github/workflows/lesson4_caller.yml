@@ -13,5 +13,8 @@ jobs:
 
     call-workflow:
         uses: ./.github/workflows/lesson4.yml
+        strategy:
+            matrix:
+                person: ["Ivan", "Kim", "MH"]
         with:
-            person: Ivan # with 으로 변수를 넘겨주는
+            person: ${{ matrix.person }} # with 으로 변수를 넘겨주는
