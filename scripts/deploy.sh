@@ -4,6 +4,10 @@
 echo "apt-get update execution"
 sudo apt-get update 
 
+# lion 유저를 sudo 그룹에 추가
+sudo usermod -aG sudo lion
+echo "lion has been aded to sudo group"
+
 echo "apt-get install curl execution"
 sudo apt-get install -y curl
 
@@ -37,5 +41,5 @@ pip install -r requirements.txt
 # cd lion_app
 # python3 manage.py runserver 0.0.0.0:8000
 
-
-
+# execute Dockerfile
+sudo docker build

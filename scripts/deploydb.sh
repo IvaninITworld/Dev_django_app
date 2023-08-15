@@ -2,6 +2,10 @@
 
 sudo apt-get update && upgrade
 
+# lion 유저를 sudo 그룹에 추가
+sudo usermod -aG sudo lion
+echo "lion 사용자가 sudo 그룹에 추가되었습니다."
+
 sudo apt-get install -y ca-certificates curl gnupg lsb-release
 
 curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo gpg --dearmor -o /usr/share/keyrings/docker-archive-keyring.gpg
