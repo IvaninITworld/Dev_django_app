@@ -11,7 +11,18 @@ env:
     IMAGE_TAG: ${{ vars.NCP_CONTAINER_REGISTRY }}/lion-app:latest
 
 jobs:
+    lint:
+        name: Check lint (black)
+        runs-on: ubuntu-latest
+        steps:
+            -   name: Check lint
+                run: |
+                    cd dev_django_app
+                    pip install black
+                    black --check .
+
     build:
+        needs: lint
         name: Build Image
         runs-on: ubuntu-latest
         steps:
