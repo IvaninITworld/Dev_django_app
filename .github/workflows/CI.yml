@@ -15,11 +15,19 @@ jobs:
         name: Check lint (black)
         runs-on: ubuntu-latest
         steps:
-            -   name: Check lint
-                run: |
-                    pwd
-                    pip install black
-                    black --check .
+            -   name: Checkout code
+                uses: actions/checkout@v3
+
+            -   uses: actions/setup-python@v4
+                with:
+                  python-version: '3.11' 
+
+            -   name: Install black
+                run: pip install black
+
+            -   name: Check black
+                run: black --check lion_app
+
 
     build:
         needs: lint
