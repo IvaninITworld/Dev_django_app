@@ -17,7 +17,7 @@ jobs:
         steps:
             -   name: Check lint
                 run: |
-                    cd dev_django_app
+                    pwd
                     pip install black
                     black --check .
 
