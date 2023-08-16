@@ -48,8 +48,8 @@ jobs:
                 tags: ${{ env.IMAGE_TAG }},"${{ env.IMAGE }}:${{ steps.timestamp.outputs.timestamp }}"
                 
                       
-    pull_from_ncp:
-        name: Connect to Server via SSH and pull from NCP
+    deploy-staging:
+        name: deploy to staging
         needs: build_push_to_ncp
         runs-on: ubuntu-latest
         steps:
@@ -75,5 +75,10 @@ jobs:
                     ${{ env.IMAGE_TAG }} \
                     /start
 
+                # 만약, git pull 을 받지 않은 서버라면, .env 파일로 핸들링할 것이다. 그렇다면
+                # --env-file .env 로 변경!
+  
             - name: echo IMAGE_TAG
               run: echo $IMAGE_TAG
+              
+              
