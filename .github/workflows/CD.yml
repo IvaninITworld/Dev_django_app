@@ -61,8 +61,10 @@ jobs:
                 password: ${{ secrets.PASSWORD }}
                 script: | # while actions is running, please use options !
                     cd dev_django_app
-                    git pull
-                    echo "${{ secrets.NCP_SECRET_KEY }}" | dockers login ${{ vars.NCP_CONTAINER_REGISTRY }} --username ${{ secrets.NCP_ACCESS_KEY }} --password-stdin
+                    
+                    echo "${{ secrets.NCP_SECRET_KEY }}" | dockers login ${{ vars.NCP_CONTAINER_REGISTRY }} \
+                    --username ${{ secrets.NCP_ACCESS_KEY }} \
+                    --password ${{ secrets.NCP_SECRET_KEY }}
                     docker pull ${{ env.IMAGE_TAG }}
                     # docker-compose -f docker-compose.prod.yml up --build -d
                     docker stop lion-app && docker rm lion-app
