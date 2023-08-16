@@ -18,6 +18,7 @@ sudo apt-get update
 
 sudo apt-get install -y docker-ce docker-ce-cli containerd.io
 
-docker --version
+# lion 유저를 docker group 에 추가
+sudo usermod -aG docker lion
 
-# sudo usermod -aG docker lion
+docker --version

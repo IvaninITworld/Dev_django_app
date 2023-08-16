@@ -35,4 +35,4 @@ RUN chmod +x /entrypoint
 # CMD ["gunicorn", "lion_app.wsgi:application", "--config", "lion_app/gunicorn_config.py"] -> start 스크립트로 대체
 
 ENTRYPOINT [ "/entrypoint" ]
-CMD [ "python", "--version" ]
+CMD [ "/start" ]
