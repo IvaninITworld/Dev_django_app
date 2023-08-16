@@ -2,13 +2,13 @@ import os
 from .base import *
 
 
-SECRET_KEY=os.getenv("DJANGO_SECRET_KEY")
+SECRET_KEY = os.getenv("DJANGO_SECRET_KEY")
 
-DEBUG=True
+DEBUG = True
 
 
 ALLOWED_HOSTS = [
-    "lion-lb-staging-18975818-470dadb487de.kr.lb.naverncp.com", # Staging Load balancer
+    "lion-lb-staging-18975818-470dadb487de.kr.lb.naverncp.com",  # Staging Load balancer
 ]
 
 # CSRF_TRUSTED_ORIGINS = [

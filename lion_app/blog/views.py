@@ -13,6 +13,7 @@ from .serializers import BlogSerializer
 client = MongoClient(host="mongo")
 db = client.likelion
 
+
 class BlogViewSet(ViewSet):
     # Define serializer
     serializer_class = BlogSerializer
@@ -36,7 +37,6 @@ class BlogViewSet(ViewSet):
         else:
             return Response(status=status.HTTP_400_BAD_REQUEST, data=serializer.errors)
 
-
     def update(self, request):
         pass
 
@@ -47,26 +47,27 @@ class BlogViewSet(ViewSet):
         pass
 
 
-
 def create_blog(rquest) -> bool:
     blog = {
-        "title" : "My first blog",
-        "content" : "This is my first blog",
-        "author" : "lion",
+        "title": "My first blog",
+        "content": "This is my first blog",
+        "author": "lion",
     }
     try:
         db.blogs.insert_one(blog)
         return True
     except Exception as e:
         print(e)
-        return False    
+        return False
+
 
 def update_blog():
     pass
 
+
 def delete_blog():
     pass
 
+
 def read_blog():
     pass
-
