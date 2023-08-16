@@ -15,7 +15,8 @@ from pathlib import Path
 from common.aws import get_secret
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
-BASE_DIR = Path(__file__).resolve().parent.parent
+# depth 가 settings 폴더안쪽으로 더 들어갔으니 뒤에 parent 추가
+BASE_DIR = Path(__file__).resolve().parent.parent.parent
 
 AWS_SECRET_NAME= os.getenv("AWS_SECRET_NAME", "like/lion/lecture")
 
@@ -26,6 +27,8 @@ AWS_SECRET_NAME= os.getenv("AWS_SECRET_NAME", "like/lion/lecture")
 
 # SECURITY WARNING: keep the secret key used in production secret!
 SECRET_KEY = 'django-insecure-**9=rb&skbp*_*2q!sczn)tq*h&qji*mt_%nsnr!k8m#wq^1d('
+# SECRET_KEY=os.getenv("DJANGO_SECRET_KEY", "django-insecure-**9=rb&skbp*_*2q!sczn)tq*h&qji*mt_%nsnr!k8m#wq^1d(")
+
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
