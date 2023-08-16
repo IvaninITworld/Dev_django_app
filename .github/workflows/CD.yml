@@ -73,7 +73,7 @@ jobs:
                     --env-file .envs/prod/django \
                     --env-file .envs/prod/db \
                     --env-file .envs/prod/server \
-                    --name lion-app-dc \
+                    --name lion-app \
                     ${{ env.IMAGE_TAG }} \
                     /start
 
