@@ -46,7 +46,7 @@ services: # 서비스들의 시작
       - ./.envs/local/server
 
   db:
-    container_name: postgres
+    container_name: postgres_db
     image: postgres:15
     env_file:
       - ./.envs/local/db
