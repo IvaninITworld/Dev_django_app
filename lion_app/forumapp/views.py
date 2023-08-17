@@ -54,4 +54,16 @@ class PostViewSet(viewsets.ModelViewSet):
                 )
                 # raise PermissionDenied("Forbidden")
 
-        return super().create(request, *args, **kwargs)
+        serializer = PostSerializer(data=request.data)
+
+        if serializer.is_valid():
+            data = serializer.validated_data
+            data["owner"] = user
+            res = serializer.create(data)
+            return Response(
+                status=status.HTTP_201_CREATED, data=PostSerializer(res).data
+            )
+        else:
+            return Response(status=status.HTTP_400_BAD_REQUEST, data=serializer.errors)
+
+        # return super().create(request, *args, **kwargs)
