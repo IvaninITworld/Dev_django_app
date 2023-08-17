@@ -35,13 +35,7 @@ class TopicViewSet(viewsets.ModelViewSet):
         # Authorization check
         # If user without permission, return 401
 
-        qs = TopicGroupUser.objects.filter(
-            # Q(group=0) | Q(group=1),
-            group__lte=TopicGroupUser.GroupChoices.common,
-            topic=topic,
-            user=user,
-        )
-        if topic.is_private and not qs.exists():
+        if not topic.can_be_read_by(user):
             return Response(
                 status=status.HTTP_401_UNAUTHORIZED,
                 data="This user is denied to access to this Topic",
@@ -67,13 +61,7 @@ class PostViewSet(viewsets.ModelViewSet):
         topic_id = data.get("topic")
         topic = get_object_or_404(Topic, id=topic_id)
 
-        qs = TopicGroupUser.objects.filter(
-            # Q(group=0) | Q(group=1),
-            group__lte=TopicGroupUser.GroupChoices.common,
-            topic=topic,
-            user=user,
-        )
-        if topic.is_private and not qs.exists():
+        if not topic.can_be_read_by(user):
             return Response(
                 status=status.HTTP_401_UNAUTHORIZED,
                 data="This user is denied to access to this Topic",
