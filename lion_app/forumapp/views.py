@@ -34,6 +34,7 @@ class PostViewSet(viewsets.ModelViewSet):
     def create(self, request: Request, *args, **kwargs):
         # check group and topic if user has right permission to write a post
         # return 403 forbidden
+        user = request.user
         data = request.data
         topic_id = data.get("topic")
         topic = get_object_or_404(Topic, id=topic_id)
@@ -41,7 +42,7 @@ class PostViewSet(viewsets.ModelViewSet):
         if topic.is_private:
             qs = TopicGroupUser.objects.filter(
                 # Q(group=0) | Q(group=1),
-                group_lte=TopicGroupUser.groupChoices.common,
+                group__lte=TopicGroupUser.GroupChoices.common,
                 topic=topic,
                 user=user,
             )
@@ -52,8 +53,5 @@ class PostViewSet(viewsets.ModelViewSet):
                     data="This user is not allowed to write a post on this Topic",
                 )
                 # raise PermissionDenied("Forbidden")
-
-            # user A, user B
-            # user A = success, user B = Unauthorized
 
         return super().create(request, *args, **kwargs)
