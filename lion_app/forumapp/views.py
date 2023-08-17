@@ -51,4 +51,7 @@ class PostViewSet(viewsets.ModelViewSet):
                 )
                 # raise PermissionDenied("Forbidden")
 
+            # user A, user B
+            # user A = success, user B = Unauthorized
+
         return super().create(request, *args, **kwargs)

@@ -39,3 +39,6 @@ class TopicGroupUser(models.Model):
         default=0, choices=groupChoices.choices
     )  # 0 = common. 1 = admin
     user = models.ForeignKey(User, on_delete=models.CASCADE)
+
+    def __str__(self):
+        return f"{self.topic} | {self.group} | {self.user}"
