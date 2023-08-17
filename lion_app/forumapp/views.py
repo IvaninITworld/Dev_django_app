@@ -34,17 +34,18 @@ class TopicViewSet(viewsets.ModelViewSet):
         user = request.user
         # Authorization check
         # If user without permission, return 401
-        if topic.is_private:
-            qs = TopicGroupUser.objects.filter(
-                group__lte=TopicGroupUser.GroupChoices.admin,
-                topic=topic,
-                user=user,
+
+        qs = TopicGroupUser.objects.filter(
+            # Q(group=0) | Q(group=1),
+            group__lte=TopicGroupUser.GroupChoices.common,
+            topic=topic,
+            user=user,
+        )
+        if topic.is_private and not qs.exists():
+            return Response(
+                status=status.HTTP_401_UNAUTHORIZED,
+                data="This user is denied to access to this Topic",
             )
-            if not qs.exists():
-                return Response(
-                    status=status.HTTP_401_UNAUTHORIZED,
-                    data="This user is denied to access to this Topic",
-                )
 
         # else, return posts
         posts = Post.objects.filter(topic=topic)  # Post 가져오기
@@ -66,20 +67,18 @@ class PostViewSet(viewsets.ModelViewSet):
         topic_id = data.get("topic")
         topic = get_object_or_404(Topic, id=topic_id)
 
-        if topic.is_private:
-            qs = TopicGroupUser.objects.filter(
-                # Q(group=0) | Q(group=1),
-                group__lte=TopicGroupUser.GroupChoices.common,
-                topic=topic,
-                user=user,
+        qs = TopicGroupUser.objects.filter(
+            # Q(group=0) | Q(group=1),
+            group__lte=TopicGroupUser.GroupChoices.common,
+            topic=topic,
+            user=user,
+        )
+        if topic.is_private and not qs.exists():
+            return Response(
+                status=status.HTTP_401_UNAUTHORIZED,
+                data="This user is denied to access to this Topic",
             )
-
-            if not qs.exists():
-                return Response(
-                    status=status.HTTP_401_UNAUTHORIZED,
-                    data="This user is not allowed to write a post on this Topic",
-                )
-                # raise PermissionDenied("Forbidden")
+            # raise PermissionDenied("Forbidden")
 
         serializer = PostSerializer(data=request.data)
 
