@@ -3,6 +3,7 @@ from django.shortcuts import get_object_or_404
 # from django.db.models import Q
 from drf_spectacular.utils import extend_schema
 from rest_framework import viewsets, status
+from rest_framework.decorators import action
 from rest_framework.request import Request
 from rest_framework.response import Response
 
@@ -24,6 +25,32 @@ class TopicViewSet(viewsets.ModelViewSet):
     @extend_schema(summary="Create new topic")
     def create(self, request, *args, **kwargs):
         return super().create(request, *args, **kwargs)
+
+    # "Topic-posts" 를 사용하기 위한 셋업
+    @action(detail=True, methods=["get"], url_name="posts")
+    def posts(self, request: Request, *args, **kwargs):
+        # need to update here
+        topic: Topic = self.get_object()  # Topic 가져오기
+        user = request.user
+        # Authorization check
+        # If user without permission, return 401
+        if topic.is_private:
+            qs = TopicGroupUser.objects.filter(
+                group__lte=TopicGroupUser.GroupChoices.admin,
+                topic=topic,
+                user=user,
+            )
+            if not qs.exists():
+                return Response(
+                    status=status.HTTP_401_UNAUTHORIZED,
+                    data="This user is denied to access to this Topic",
+                )
+
+        # else, return posts
+        posts = Post.objects.filter(topic=topic)  # Post 가져오기
+        # posts = topic.posts # 이렇게도 가능
+        serializer = PostSerializer(posts, many=True)
+        return Response(data=serializer.data)
 
 
 @extend_schema(tags=["Post"])
