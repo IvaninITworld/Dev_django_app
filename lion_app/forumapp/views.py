@@ -1,10 +1,12 @@
 from django.shortcuts import get_object_or_404
-from django.db.models import Q
-from rest_framework import viewsets, status
+
+# from django.db.models import Q
 from drf_spectacular.utils import extend_schema
+from rest_framework import viewsets, status
 from rest_framework.request import Request
 from rest_framework.response import Response
-from rest_framework.exceptions import PermissionDenied
+
+# from rest_framework.exceptions import PermissionDenied
 
 from .models import Topic, Post, TopicGroupUser
 from .serializers import TopicSerializer, PostSerializer
