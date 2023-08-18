@@ -1,0 +1,23 @@
+version: "3"
+
+services:
+  lion-app:
+    depends_on:
+      - db
+    container_name: lion-app-test
+    build:
+      context: lion_app
+      dockerfile: Dockerfile
+    env_file:
+      - ./.envs/local/django
+      - ./.envs/local/db
+      - ./.envs/local/server
+
+  db:
+    container_name: db-test
+    image: postgres:13
+    env_file:
+      - ./.envs/local/db
+    ports:
+      - "15432:5432"
+      
