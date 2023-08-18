@@ -56,6 +56,10 @@ class PostViewSet(viewsets.ModelViewSet):
     queryset = Post.objects.all()
     serializer_class = PostSerializer  # 항상 기재해야하는 트리거?
 
+    @extend_schema(deprecated=True)
+    def list(self, request, *args, **kwargs):
+        return Response(status=status.HTTP_400_BAD_REQUEST, data="Deprecated API")
+
     def create(self, request: Request, *args, **kwargs):
         # check group and topic if user has right permission to write a post
         # return 403 forbidden
@@ -85,7 +89,7 @@ class PostViewSet(viewsets.ModelViewSet):
 
         # return super().create(request, *args, **kwargs)
 
-    def retrieve(self, request, *args, **kwargs):
+    def retrieve(self, request: Request, *args, **kwargs):
         user = request.user
         post: Post = self.get_object()
         topic = post.topic
