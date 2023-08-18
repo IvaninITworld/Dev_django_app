@@ -12,6 +12,9 @@ from rest_framework.response import Response
 from .models import Topic, Post, TopicGroupUser
 from .serializers import TopicSerializer, PostSerializer
 
+# 코드 리팩토링... 장고에서 코드 리펙토링할 떄 중요한건 !
+# Views.py 를 간결하게 하고 최대한 models 와 serializer 를 활용할 수 있게 하자
+
 
 # 모델 뷰셋 사용
 @extend_schema(tags=["Topic"])
@@ -51,7 +54,7 @@ class TopicViewSet(viewsets.ModelViewSet):
 @extend_schema(tags=["Post"])
 class PostViewSet(viewsets.ModelViewSet):
     queryset = Post.objects.all()
-    serializer_class = PostSerializer
+    serializer_class = PostSerializer  # 항상 기재해야하는 트리거?
 
     def create(self, request: Request, *args, **kwargs):
         # check group and topic if user has right permission to write a post
@@ -68,7 +71,7 @@ class PostViewSet(viewsets.ModelViewSet):
             )
             # raise PermissionDenied("Forbidden")
 
-        serializer = PostSerializer(data=request.data)
+        serializer = PostSerializer(data=request.data)  # is_valid() 를 활성화하기 위함
 
         if serializer.is_valid():
             data = serializer.validated_data

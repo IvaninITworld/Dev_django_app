@@ -7,7 +7,7 @@ class PostSerializer(serializers.ModelSerializer):
         model = Post
         fields = "__all__"
 
-        read_only_fields = (
+        read_only_fields = (  # 변경요청시 denied
             "id",
             "owner",
             "created_at",
