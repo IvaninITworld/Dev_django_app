@@ -47,14 +47,22 @@ class PostTest(APITestCase):
                 owner=cls.superuser,
             )
 
+        # authorized & unauthorized
         cls.authorized_user = User.objects.create_user("authorized")
         cls.unauthorized_user = User.objects.create_user("unauthorized")
-        cls.admin = User.objects.create_user("admin")
 
         TopicGroupUser.objects.create(
             topic=cls.private_topic,
             group=TopicGroupUser.GroupChoices.common,
             user=cls.authorized_user,
+        )
+
+        # admin user
+        cls.admin = User.objects.create_user("admin")
+        TopicGroupUser.objects.create(
+            topic=cls.private_topic,
+            group=TopicGroupUser.GroupChoices.admin,
+            user=cls.admin,
         )
 
     def test_write_permission_on_private_topic(self):
@@ -75,8 +83,8 @@ class PostTest(APITestCase):
         # authorized user tries to write a post on Topic -> success, 201
         self.client.force_login(self.authorized_user)
         # res = self.client.post("http://localhost:8000/forum/post/", data=data) # 리버스 사용전
-        # data["owner"] = self.authorized_user.pk  # onwer 만 변경 # views 에서 정의
         res: HttpResponse = self.client.post(reverse("post-list"), data=data)
+        # data["owner"] = self.authorized_user.pk  # onwer 만 변경 # views 에서 정의
         self.assertEqual(res.status_code, status.HTTP_201_CREATED)
         res_data = json.loads(res.content)
         Post.objects.get(pk=res_data["id"])
@@ -89,11 +97,11 @@ class PostTest(APITestCase):
         Post.objects.get(pk=res_data["id"])
 
         # Admin
-        # self.client.force_login(self.admin)
-        # res: HttpResponse = self.client.post(reverse("post-list"), data=data)
-        # self.assertEqual(res.status_code, status.HTTP_201_CREATED)
-        # res_data = json.loads(res.content)
-        # Post.objects.get(pk=res_data["id"])
+        self.client.force_login(self.admin)
+        res: HttpResponse = self.client.post(reverse("post-list"), data=data)
+        self.assertEqual(res.status_code, status.HTTP_201_CREATED)
+        res_data = json.loads(res.content)
+        Post.objects.get(pk=res_data["id"])
 
     def test_read_permission_on_topics(self):
         # read public topic
@@ -118,3 +126,25 @@ class PostTest(APITestCase):
         data = json.loads(res.content)
         posts_n = Post.objects.filter(topic=self.private_topic).count()
         self.assertEqual(len(data), posts_n)
+
+    def test_read_permission_on_posts(self):
+        # read public topic posts
+        # unathorized user request => 200
+        self.client.force_login(self.unauthorized_user)
+        public_post = Post.objects.filter(topic=self.public_topic).first()
+        res = self.client.get(reverse("post-detail", args=[public_post.pk]))
+        self.assertEqual(res.status_code, status.HTTP_200_OK)
+
+        # read private topic posts
+        # unathorized user request => 401
+        self.client.force_login(self.unauthorized_user)
+        private_post = Post.objects.filter(topic=self.private_topic).first()
+        res = self.client.get(reverse("post-detail", args=[private_post.pk]))
+        self.assertEqual(res.status_code, status.HTTP_401_UNAUTHORIZED)
+
+        # read private topic posts
+        # authorized user request => 200
+        self.client.force_login(self.authorized_user)
+        private_post = Post.objects.filter(topic=self.private_topic).first()
+        res = self.client.get(reverse("post-detail", args=[private_post.pk]))
+        self.assertEqual(res.status_code, status.HTTP_200_OK)
