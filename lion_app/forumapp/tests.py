@@ -49,6 +49,7 @@ class PostTest(APITestCase):
 
         cls.authorized_user = User.objects.create_user("authorized")
         cls.unauthorized_user = User.objects.create_user("unauthorized")
+        cls.admin = User.objects.create_user("admin")
 
         TopicGroupUser.objects.create(
             topic=cls.private_topic,
@@ -77,8 +78,22 @@ class PostTest(APITestCase):
         # data["owner"] = self.authorized_user.pk  # onwer 만 변경 # views 에서 정의
         res: HttpResponse = self.client.post(reverse("post-list"), data=data)
         self.assertEqual(res.status_code, status.HTTP_201_CREATED)
-        data = json.loads(res.content)
-        Post.objects.get(pk=data["id"])
+        res_data = json.loads(res.content)
+        Post.objects.get(pk=res_data["id"])
+
+        # Owner
+        self.client.force_login(self.superuser)
+        res: HttpResponse = self.client.post(reverse("post-list"), data=data)
+        self.assertEqual(res.status_code, status.HTTP_201_CREATED)
+        res_data = json.loads(res.content)
+        Post.objects.get(pk=res_data["id"])
+
+        # Admin
+        # self.client.force_login(self.admin)
+        # res: HttpResponse = self.client.post(reverse("post-list"), data=data)
+        # self.assertEqual(res.status_code, status.HTTP_201_CREATED)
+        # res_data = json.loads(res.content)
+        # Post.objects.get(pk=res_data["id"])
 
     def test_read_permission_on_topics(self):
         # read public topic

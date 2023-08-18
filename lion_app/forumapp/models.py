@@ -18,7 +18,11 @@ class Topic(models.Model):
         return self.name
 
     def can_be_read_by(self, user: User):
-        if not self.is_private or self.members.filter(user=user).exists():
+        if (
+            not self.is_private
+            or self.owner == user
+            or self.members.filter(user=user).exists()
+        ):
             return True
         return False
 
@@ -39,6 +43,7 @@ class TopicGroupUser(models.Model):
     class GroupChoices(models.IntegerChoices):
         common = 0
         admin = 1
+        superuser = 2
 
     topic = models.ForeignKey(Topic, on_delete=models.CASCADE, related_name="members")
     group = models.IntegerField(
