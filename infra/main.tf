@@ -49,6 +49,13 @@ resource "ncloud_server" "server" {
 # 공인 아이피 설정 및 부여
 resource "ncloud_public_ip" "test" { # 빈 깡통으로 넣어주기만 해도 공인 IP는 생성
     server_instance_no = ncloud_server.server.instance_no
+    description = "public IP for server"
+}
+
+# 공인 아이피 설정 및 부여
+resource "ncloud_public_ip" "test2" { # db 용
+    server_instance_no = ncloud_server.db.instance_no
+    description = "public IP for db"
 }
 
 # 공인 IP 를 서버에서 가져오기
@@ -140,3 +147,11 @@ EOT
 
 
 # DB instance 생성
+resource "ncloud_server" "db" {
+  subnet_no                 = ncloud_subnet.test.id
+  name                      = "my-tf-db"
+  server_image_product_code =  "SW.VSVR.OS.LNX64.UBNTU.SVR2004.B050"
+  server_product_code       = data.ncloud_server_products.products.server_products[0].product_code # 서버스펙 설정
+  login_key_name            = ncloud_login_key.loginkey.key_name
+  init_script_no            = ncloud_init_script.init.init_script_no
+}
