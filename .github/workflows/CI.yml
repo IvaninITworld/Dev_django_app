@@ -72,18 +72,6 @@ jobs:
                     tags: ${{ env.IMAGE_TAG }},"${{ env.IMAGE }}:${{ steps.timestamp.outputs.timestamp }}"
                     platforms: linux/amd64,linux/arm64
 
-            # -   name: Build
-            #     run: |
-            #         docker build -t test-lion:test lion_app
-
-
-            # -   name: Run Test
-            #     run: |
-            #         docker run -d -e DJANGO_SETTINGS_MODULE=lion_app.settings.test \
-            #         --name test \
-            #         test-lion:test python --version
-            #         docker exec test python manage.py test
-
             # -   name: Post test
             #     if: ${{ always() }}
             #     run: |
