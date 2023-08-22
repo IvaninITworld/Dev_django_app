@@ -44,7 +44,5 @@ pip install -r requirements.txt
 # execute Dockerfile
 sudo docker build
 
-
-
 # docker run -p 8000:8000 -d -v ~/.aws:/root/.aws:ro --env-file .envs/prod/django --env-file .envs/prod/db --env-file .envs/prod/server --name lion-app-dc likelion-cr-mh.kr.ncr.ntruss.com/lion-app:latest ./lion_app/scripts/start
 

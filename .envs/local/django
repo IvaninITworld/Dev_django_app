@@ -1,1 +1,3 @@
 DB_HOST=db
+DJANGO_SETTINGS_MODULE="lion_app.settings.local"
+DJANGO_SECRET_KEY="django-insecure-**9=rb&skbp*_*2q!sczn)tq*h&qji*mt_%nsnr!k8m#wq^1d("
