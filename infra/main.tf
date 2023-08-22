@@ -12,10 +12,20 @@ provider "ncloud" {
   region      = "KR"
   site        = "PUBLIC"
   support_vpc = true
+  access_key = var.NCP_ACCESS_KEY
+  secret_key = var.NCP_SECRET_KEY
 }
 
 variable "password" {
   type = string
+}
+variable "NCP_ACCESS_KEY" {
+  type = string
+  sensitive = true
+}
+variable "NCP_SECRET_KEY" {
+  type = string
+  sensitive = true
 }
 
 // Create a new server instance
@@ -29,6 +39,30 @@ resource "ncloud_vpc" "main" {
   name = "lion-tf"
 }
 ## VPC 설정 끝
+
+## 서브넷 설정 시작
+# backend server
+resource "ncloud_subnet" "main" {
+  vpc_no         = ncloud_vpc.main.vpc_no
+  subnet         = cidrsubnet(ncloud_vpc.main.ipv4_cidr_block, 8, 1)
+  zone           = "KR-2"
+  network_acl_no = ncloud_vpc.main.default_network_acl_no
+  subnet_type    = "PUBLIC" # PUBLIC(Public) | PRIVATE(Private)
+  usage_type     = "GEN" # GEN(General) | LOADB(For load balancer)
+  name = "lion-tf-sub-main"
+}
+
+# load balancer
+resource "ncloud_subnet" "be-lb" {
+  vpc_no         = ncloud_vpc.main.vpc_no
+  subnet         = cidrsubnet(ncloud_vpc.main.ipv4_cidr_block, 8, 2) # 맨뒤에 숫자 변경해서 네트워크 분리
+  zone           = "KR-2"
+  network_acl_no = ncloud_vpc.main.default_network_acl_no
+  subnet_type    = "PRIVATE" # PUBLIC(Public) | PRIVATE(Private)
+  usage_type     = "LOADB" # GEN(General) | LOADB(For load balancer) 로드 밸런서는 꼭 LOADB 로 설정
+  name = "be-lb-subnet"
+}
+## 서브넷 설정 끝
 
 ## ACG 설정 시작
 # db
@@ -60,8 +94,6 @@ resource "ncloud_access_control_group" "web" {
   vpc_no      = ncloud_vpc.main.vpc_no
 }
 
-
-
 # Inbound rule
 resource "ncloud_access_control_group_rule" "web-acg-rule" {
   access_control_group_no = ncloud_access_control_group.web.id
@@ -74,28 +106,6 @@ resource "ncloud_access_control_group_rule" "web-acg-rule" {
   }
 }
 ## ACG 설정 끝
-
-## 서브넷 설정 시작
-resource "ncloud_subnet" "main" {
-  vpc_no         = ncloud_vpc.main.vpc_no
-  subnet         = cidrsubnet(ncloud_vpc.main.ipv4_cidr_block, 8, 1)
-  zone           = "KR-2"
-  network_acl_no = ncloud_vpc.main.default_network_acl_no
-  subnet_type    = "PUBLIC"
-  usage_type     = "GEN"
-  name = "lion-tf-sub-main"
-}
-
-resource "ncloud_subnet" "be-lb" {
-  vpc_no         = ncloud_vpc.main.vpc_no
-  subnet         = cidrsubnet(ncloud_vpc.main.ipv4_cidr_block, 8, 2) # 맨뒤에 숫자 변경
-  zone           = "KR-2"
-  network_acl_no = ncloud_vpc.main.default_network_acl_no
-  subnet_type    = "PRIVATE" // PUBLIC(Public) | PRIVATE(Private)
-  usage_type     = "LOADB" // GEN(General) | LOADB(For load balancer) 로드 밸런서는 꼭 LOADB 로 설정
-  name = "be-lb-subnet"
-}
-## 서브넷 설정 끝
 
 ## network interface 생성 후 acg 추가 설정 시작
 # web
@@ -232,9 +242,11 @@ resource "ncloud_lb" "lion-lb-tf" {
   name = "be-lb-staging"
   network_type = "PUBLIC"
   type = "NETWORK_PROXY"
+  # 로드 밸런서는 구분지어진 하나의 서브넷을 받기 때문에 따로 설정해준다.
   subnet_no_list = [ ncloud_subnet.be-lb.id ]
 }
 
+# 로드밸런서 도메인 주소값 출력
 output "ncloud-lb-domain" {
   value = ncloud_lb.lion-lb-tf.domain
 }
@@ -247,7 +259,7 @@ resource "ncloud_lb_target_group" "lion-lb-tf" {
   port        = 8000
   description = "for django be"
   health_check {
-    protocol = "TCP"
+    protocol = "TCP" # PROXY_TCP 는 체크도 TCP 만
     http_method = "GET"
     port           = 8080
     url_path       = "/monitor/l7check"
@@ -258,6 +270,7 @@ resource "ncloud_lb_target_group" "lion-lb-tf" {
   algorithm_type = "RR"
 }
 
+# 어떤 프로토콜을 리스닝할건지 정의
 resource "ncloud_lb_listener" "lion-lb-tf" {
   load_balancer_no = ncloud_lb.lion-lb-tf.load_balancer_no
   protocol = "TCP"
@@ -265,9 +278,10 @@ resource "ncloud_lb_listener" "lion-lb-tf" {
   target_group_no = ncloud_lb_target_group.lion-lb-tf.target_group_no
 }
 
+# 타겟 그룹 설정으로 대상 서버 인스터스를 정할 수 있다
 # Target group attachment
 resource "ncloud_lb_target_group_attachment" "lion-lb-tg-tf" {
   target_group_no = ncloud_lb_target_group.lion-lb-tf.target_group_no
   target_no_list = [ncloud_server.server.instance_no]
 }
-
+## Load Balancer 생성 끝
