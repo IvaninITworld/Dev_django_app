@@ -9,8 +9,6 @@ terraform {
 
 // Configure the ncloud provider
 provider "ncloud" {
-#   access_key  = var.access_key
-#   secret_key  = var.secret_key
   region      = "KR"
   site        = "PUBLIC"
   support_vpc = true
@@ -21,25 +19,24 @@ resource "ncloud_login_key" "loginkey" {
   key_name = "test-key"
 }
 
-resource "ncloud_vpc" "test" {
+resource "ncloud_vpc" "main" {
   ipv4_cidr_block = "10.1.0.0/16"
   name = "lion-tf"
 }
 
-resource "ncloud_subnet" "test" {
-  vpc_no         = ncloud_vpc.test.vpc_no
-  subnet         = cidrsubnet(ncloud_vpc.test.ipv4_cidr_block, 8, 1)
+resource "ncloud_subnet" "main" {
+  vpc_no         = ncloud_vpc.main.vpc_no
+  subnet         = cidrsubnet(ncloud_vpc.main.ipv4_cidr_block, 8, 1)
   zone           = "KR-2"
-  network_acl_no = ncloud_vpc.test.default_network_acl_no
+  network_acl_no = ncloud_vpc.main.default_network_acl_no
   subnet_type    = "PUBLIC"
   usage_type     = "GEN"
   name = "lion-tf-sub"
 }
 
 resource "ncloud_server" "server" {
-  subnet_no                 = ncloud_subnet.test.id
-  name                      = "my-tf-server"
-#   server_image_product_code = "SW.VSVR.OS.LNX64.CNTOS.0703.B050"
+  subnet_no                 = ncloud_subnet.main.id
+  name                      = "be-staging"
   server_image_product_code =  "SW.VSVR.OS.LNX64.UBNTU.SVR2004.B050"
   server_product_code       = data.ncloud_server_products.products.server_products[0].product_code # 서버스펙 설정
   login_key_name            = ncloud_login_key.loginkey.key_name
@@ -47,31 +44,19 @@ resource "ncloud_server" "server" {
 }
 
 # 공인 아이피 설정 및 부여
-resource "ncloud_public_ip" "test" { # 빈 깡통으로 넣어주기만 해도 공인 IP는 생성
+resource "ncloud_public_ip" "main" { # 빈 깡통으로 넣어주기만 해도 공인 IP는 생성
     server_instance_no = ncloud_server.server.instance_no
-    description = "public IP for server"
+    description = "public IP for backend server"
 }
 
-# 공인 아이피 설정 및 부여
-resource "ncloud_public_ip" "test2" { # db 용
-    server_instance_no = ncloud_server.db.instance_no
-    description = "public IP for db"
-}
-
-# 공인 IP 를 서버에서 가져오기
-output "server_ip" {
-  value = ncloud_server.server.public_ip
-}
 # 공인 IP 를 생성하면서 가져오기
-output "public_ip" {
-  value = ncloud_public_ip.test.public_ip
+output "backend_public_ip" {
+  value = ncloud_public_ip.main.public_ip
 }
-
 
 # 서버스펙 데이터 삽입
 data "ncloud_server_products" "products" {
   server_image_product_code = "SW.VSVR.OS.LNX64.UBNTU.SVR2004.B050"
-  # SVR.VSVR.HICPU.C002.M004.NET.HDD.B050.G002
 
   filter {
     name   = "product_code"
@@ -148,10 +133,21 @@ EOT
 
 # DB instance 생성
 resource "ncloud_server" "db" {
-  subnet_no                 = ncloud_subnet.test.id
-  name                      = "my-tf-db"
+  subnet_no                 = ncloud_subnet.main.id
+  name                      = "db-staging"
   server_image_product_code =  "SW.VSVR.OS.LNX64.UBNTU.SVR2004.B050"
   server_product_code       = data.ncloud_server_products.products.server_products[0].product_code # 서버스펙 설정
   login_key_name            = ncloud_login_key.loginkey.key_name
   init_script_no            = ncloud_init_script.init.init_script_no
+}
+
+# 공인 아이피 설정 및 부여
+resource "ncloud_public_ip" "db" { # db 용
+    server_instance_no = ncloud_server.db.instance_no
+    description = "public IP for db server"
+}
+
+# 공인 IP 를 생성하면서 가져오기
+output "db_public_ip" {
+  value = ncloud_public_ip.db.public_ip
 }
