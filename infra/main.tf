@@ -36,10 +36,6 @@ variable "IMAGE_TAG" {
   type = string
 }
 
-variable "db_host" {
-  type = string
-}
-
 variable "db" {
     type = string
     sensitive = true
@@ -251,7 +247,7 @@ resource "ncloud_init_script" "be" {
     db_user = var.db_user
     db_password = var.db_password
     db_port = var.db_port
-    db_host = var.db_host
+    db_host = ncloud_public_ip.db.public_ip
     NCP_ACCESS_KEY = var.NCP_ACCESS_KEY
     NCP_SECRET_KEY = var.NCP_SECRET_KEY
     NCP_CONTAINER_REGISTRY = var.NCP_CONTAINER_REGISTRY
@@ -324,7 +320,7 @@ resource "ncloud_lb_target_group" "lion-lb-tf" {
   health_check {
     protocol = "TCP" # PROXY_TCP 는 체크도 TCP 만
     http_method = "GET"
-    port           = 8080
+    port           = 8000
     url_path       = "/monitor/l7check"
     cycle          = 30
     up_threshold   = 2
