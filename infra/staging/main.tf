@@ -16,134 +16,10 @@ provider "ncloud" {
   secret_key = var.NCP_SECRET_KEY
 }
 
-variable "password" {
-  type = string
-}
-variable "NCP_ACCESS_KEY" {
-  type = string
-  sensitive = true
-}
-variable "NCP_SECRET_KEY" {
-  type = string
-  sensitive = true
-}
-
-variable "NCP_CONTAINER_REGISTRY" {
-  type = string
-}
-
-variable "IMAGE_TAG" {
-  type = string
-}
-
-variable "db" {
-    type = string
-    sensitive = true
-}
-
-variable "db_user" {
-  type = string
-  sensitive = true
-}
-
-variable "db_password" {
-  type = string
-  sensitive = true
-}
-
-variable "db_port" {
-  type = string
-  sensitive = true
-}
-
-variable "DJANGO_SETTINGS_MODULE" {
-  type = string
-  sensitive = true
-}
-
-variable "DJANGO_SECRET_KEY" {
-  type = string
-  sensitive = true
-}
-
 // Create a new server instance
 resource "ncloud_login_key" "loginkey" {
   key_name = "test-key"
 }
-
-## VPC 설정 시작
-resource "ncloud_vpc" "main" {
-  ipv4_cidr_block = "10.1.0.0/16"
-  name = "lion-tf"
-}
-## VPC 설정 끝
-
-## 서브넷 설정 시작
-# backend server subnet
-resource "ncloud_subnet" "main" {
-  vpc_no         = ncloud_vpc.main.vpc_no
-  subnet         = cidrsubnet(ncloud_vpc.main.ipv4_cidr_block, 8, 1)
-  zone           = "KR-2"
-  network_acl_no = ncloud_vpc.main.default_network_acl_no
-  subnet_type    = "PUBLIC" # PUBLIC(Public) | PRIVATE(Private)
-  usage_type     = "GEN" # GEN(General) | LOADB(For load balancer)
-  name = "lion-tf-sub-main"
-}
-
-# load balancer subnet
-resource "ncloud_subnet" "be-lb" {
-  vpc_no         = ncloud_vpc.main.vpc_no
-  subnet         = cidrsubnet(ncloud_vpc.main.ipv4_cidr_block, 8, 2) # 맨뒤에 숫자 변경해서 네트워크 분리
-  zone           = "KR-2"
-  network_acl_no = ncloud_vpc.main.default_network_acl_no
-  subnet_type    = "PRIVATE" # PUBLIC(Public) | PRIVATE(Private)
-  usage_type     = "LOADB" # GEN(General) | LOADB(For load balancer) 로드 밸런서는 꼭 LOADB 로 설정
-  name = "be-lb-subnet"
-}
-## 서브넷 설정 끝
-
-## ACG 설정 시작
-# db
-resource "ncloud_access_control_group" "db" {
-  name        = "lion-db"
-  description = "postgres db ACG"
-  vpc_no      = ncloud_vpc.main.vpc_no
-}
-# Inbound rule
-resource "ncloud_access_control_group_rule" "db-acg-rule" {
-  access_control_group_no = ncloud_access_control_group.db.id
-
-  inbound { # DB 는 subnet 과 같은 ip 블럭으로 private 하게 해야하지만 staging 이니 일단 ok
-    protocol    = "TCP"
-    ip_block    = "0.0.0.0/0"
-    port_range  = "5432"
-    description = "accept 5432 port for postgres"
-  }
-}
-
-data "ncloud_access_control_group" "default" {
-    id = "124479" # lion-tf-default-acg
-}
-
-# web
-resource "ncloud_access_control_group" "web" {
-  name        = "lion-web"
-  description = "web ACG"
-  vpc_no      = ncloud_vpc.main.vpc_no
-}
-
-# Inbound rule
-resource "ncloud_access_control_group_rule" "web-acg-rule" {
-  access_control_group_no = ncloud_access_control_group.web.id
-
-  inbound {
-    protocol    = "TCP"
-    ip_block    = "0.0.0.0/0"
-    port_range  = "8000"
-    description = "accept 8000 port for Django"
-  }
-}
-## ACG 설정 끝
 
 ## network interface 생성 후 acg 추가 설정 시작
 # web
@@ -190,11 +66,6 @@ resource "ncloud_public_ip" "main" { # 빈 깡통으로 넣어주기만 해도 �
     server_instance_no = ncloud_server.server.instance_no
     description = "public IP for backend server"
 }
-
-# 공인 IP 를 생성하면서 가져오기
-output "backend_public_ip" {
-  value = ncloud_public_ip.main.public_ip
-}
 ## Main backend server 설정 끝
 
 ## 서버스펙 데이터 삽입 시작
@@ -229,13 +100,6 @@ data "ncloud_server_products" "products" {
 
   output_file = "product.json"
 }
-
-output "products" {
-  value = {
-    for product in data.ncloud_server_products.products.server_products:
-    product.id => product.product_name
-  }
-}
 ## 서버스펙 데이터 삽입 끝
 
 ## init script 설정 시작
@@ -254,6 +118,7 @@ resource "ncloud_init_script" "be" {
     IMAGE_TAG = var.IMAGE_TAG
     DJANGO_SECRET_KEY = var.DJANGO_SECRET_KEY
     DJANGO_SETTINGS_MODULE = var.DJANGO_SETTINGS_MODULE
+    CHECK_CEHCK = var.CHECK_CEHCK
   })
 } # Shell Script 로 가져다 쓰기: .tftpl
 
@@ -288,11 +153,6 @@ resource "ncloud_public_ip" "db" { # db 용
     server_instance_no = ncloud_server.db.instance_no
     description = "public IP for db server"
 }
-
-# 공인 IP 를 생성하면서 가져오기
-output "db_public_ip" {
-  value = ncloud_public_ip.db.public_ip
-}
 ## DB 서버 instance 생성 끝
 
 ## Load Balancer 생성 시작
@@ -303,11 +163,6 @@ resource "ncloud_lb" "lion-lb-tf" {
   type = "NETWORK_PROXY"
   # 로드 밸런서는 구분지어진 하나의 서브넷을 받기 때문에 따로 설정해준다.
   subnet_no_list = [ ncloud_subnet.be-lb.id ]
-}
-
-# 로드밸런서 도메인 주소값 출력
-output "ncloud-lb-domain" {
-  value = ncloud_lb.lion-lb-tf.domain
 }
 
 # Target group

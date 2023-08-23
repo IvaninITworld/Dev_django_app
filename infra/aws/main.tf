@@ -23,14 +23,15 @@ resource "aws_vpc" "lion" {
 
 
 # Create IAM user
-resource "aws_iam_user" "lion" {
-  name = "lion-tf"
-  path = "/"
+resource "aws_iam_user" "dev" {
+  for_each = toset(["cat", "dog", "Tiger", "Eagle"])
+  name = each.key
+  path = "/dev/"
 
 }
 
 resource "aws_iam_access_key" "lion" {
-  user = aws_iam_user.lion.name
+  user = aws_iam_user.dev.name
 }
 
 data "aws_iam_policy_document" "lion_ro" {
@@ -41,18 +42,24 @@ data "aws_iam_policy_document" "lion_ro" {
   }
 }
 
-resource "aws_iam_user_policy" "lion_ro" {
-  name   = "tf-test"
-  user   = aws_iam_user.lion.name
-  policy = data.aws_iam_policy_document.lion_ro.json
-}
+# resource "aws_iam_user_policy" "lion_ro" {
+#   name   = "tf-test"
+#   user   = aws_iam_user.lion.name
+#   policy = data.aws_iam_policy_document.lion_ro.json
+# }
 
-# active console access
-resource "aws_iam_user_login_profile" "lion" {
-  user    = aws_iam_user.lion.name
-}
+# # active console access
+# resource "aws_iam_user_login_profile" "lion" {
+#   user    = aws_iam_user.lion.name
+# }
 
-output "password" {
-  value = aws_iam_user_login_profile.lion.password
-  sensitive = true # console 에서는 가려주자
-}
+# output "password" {
+#   value = aws_iam_user_login_profile.lion.password
+#   sensitive = true # console 에서는 가려주자
+# }
+
+# # 유저정보를 출력하는 리소스
+# resource "local_file" "users" {
+#     content = "${aws_iam_user_login_profile.lion.password}"
+#     filename = "${path.module}/users.txt"
+# }
