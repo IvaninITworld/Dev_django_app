@@ -28,6 +28,48 @@ variable "NCP_SECRET_KEY" {
   sensitive = true
 }
 
+variable "NCP_CONTAINER_REGISTRY" {
+  type = string
+}
+
+variable "IMAGE_TAG" {
+  type = string
+}
+
+variable "db_host" {
+  type = string
+}
+
+variable "db" {
+    type = string
+    sensitive = true
+}
+
+variable "db_user" {
+  type = string
+  sensitive = true
+}
+
+variable "db_password" {
+  type = string
+  sensitive = true
+}
+
+variable "db_port" {
+  type = string
+  sensitive = true
+}
+
+variable "DJANGO_SETTINGS_MODULE" {
+  type = string
+  sensitive = true
+}
+
+variable "DJANGO_SECRET_KEY" {
+  type = string
+  sensitive = true
+}
+
 // Create a new server instance
 resource "ncloud_login_key" "loginkey" {
   key_name = "test-key"
@@ -41,7 +83,7 @@ resource "ncloud_vpc" "main" {
 ## VPC 설정 끝
 
 ## 서브넷 설정 시작
-# backend server
+# backend server subnet
 resource "ncloud_subnet" "main" {
   vpc_no         = ncloud_vpc.main.vpc_no
   subnet         = cidrsubnet(ncloud_vpc.main.ipv4_cidr_block, 8, 1)
@@ -52,7 +94,7 @@ resource "ncloud_subnet" "main" {
   name = "lion-tf-sub-main"
 }
 
-# load balancer
+# load balancer subnet
 resource "ncloud_subnet" "be-lb" {
   vpc_no         = ncloud_vpc.main.vpc_no
   subnet         = cidrsubnet(ncloud_vpc.main.ipv4_cidr_block, 8, 2) # 맨뒤에 숫자 변경해서 네트워크 분리
@@ -138,7 +180,7 @@ resource "ncloud_server" "server" {
   server_image_product_code =  "SW.VSVR.OS.LNX64.UBNTU.SVR2004.B050"
   server_product_code       = data.ncloud_server_products.products.server_products[0].product_code # 서버스펙 설정
   login_key_name            = ncloud_login_key.loginkey.key_name
-  init_script_no            = ncloud_init_script.init.init_script_no
+  init_script_no            = ncloud_init_script.be.init_script_no
 
   network_interface {
     network_interface_no = ncloud_network_interface.web.id
@@ -200,12 +242,33 @@ output "products" {
 }
 ## 서버스펙 데이터 삽입 끝
 
-
 ## init script 설정 시작
-resource "ncloud_init_script" "init" {
-  name    = "set-docker-tf"
-  content = templatefile("${path.module}/main_init_script.tftpl", {
+resource "ncloud_init_script" "be" {
+  name    = "set-be-tf"
+  content = templatefile("${path.module}/be_init_script.tftpl", {
     password = var.password
+    db = var.db
+    db_user = var.db_user
+    db_password = var.db_password
+    db_port = var.db_port
+    db_host = var.db_host
+    NCP_ACCESS_KEY = var.NCP_ACCESS_KEY
+    NCP_SECRET_KEY = var.NCP_SECRET_KEY
+    NCP_CONTAINER_REGISTRY = var.NCP_CONTAINER_REGISTRY
+    IMAGE_TAG = var.IMAGE_TAG
+    DJANGO_SECRET_KEY = var.DJANGO_SECRET_KEY
+    DJANGO_SETTINGS_MODULE = var.DJANGO_SETTINGS_MODULE
+  })
+} # Shell Script 로 가져다 쓰기: .tftpl
+
+resource "ncloud_init_script" "db" {
+  name    = "set-db-tf"
+  content = templatefile("${path.module}/db_init_script.tftpl", {
+    password = var.password
+    db = var.db
+    db_user = var.db_user
+    db_password = var.db_password
+    db_port = var.db_port
   })
 } # Shell Script 로 가져다 쓰기: .tftpl
 ## init script 설정 시작
@@ -217,7 +280,7 @@ resource "ncloud_server" "db" {
   server_image_product_code =  "SW.VSVR.OS.LNX64.UBNTU.SVR2004.B050"
   server_product_code       = data.ncloud_server_products.products.server_products[0].product_code # 서버스펙 설정
   login_key_name            = ncloud_login_key.loginkey.key_name
-  init_script_no            = ncloud_init_script.init.init_script_no
+  init_script_no            = ncloud_init_script.db.init_script_no
   network_interface {
     network_interface_no = ncloud_network_interface.db.id
     order = 0
