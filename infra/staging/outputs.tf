@@ -10,7 +10,7 @@ output "db_public_ip" {
 }
 
 
-## 서버 스펙
+## 서버 스펙 출력
 output "products" {
   value = {
     for product in data.ncloud_server_products.products.server_products:
