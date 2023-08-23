@@ -206,8 +206,8 @@ terraform.rc
 .terraform.lock.hcl
 
 # deployment files
-scripts/set_db_server.sh
-scripts/set_be_server.sh
+# scripts/set_db_server.sh
+# scripts/set_be_server.sh
 
 # AWS user info
 infra/aws/users.txt
