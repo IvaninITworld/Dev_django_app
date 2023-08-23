@@ -47,8 +47,3 @@ variable "DJANGO_SECRET_KEY" {
   type = string
   sensitive = true
 }
-
-variable "CHECK_CEHCK" {
-  type = string
-  sensitive = true
-}
