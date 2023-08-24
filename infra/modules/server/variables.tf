@@ -60,3 +60,14 @@ variable "DJANGO_SECRET_KEY" {
   type = string
   sensitive = true
 }
+
+
+# env
+variable "env" {
+  type = string  
+}
+
+# vpc
+variable "vpc_id" {
+  type = string
+}

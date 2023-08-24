@@ -1,19 +1,18 @@
+## main 서버 공인 IP 를 생성하면서 가져오기
+output "backend_public_ip" {
+  value = module.servers.backend_public_ip
+}
 
-# ## main 서버 공인 IP 를 생성하면서 가져오기
-# output "backend_public_ip" {
-#   value = ncloud_public_ip.main.public_ip
-# }
-
-# ## db 서버 공인 IP 를 생성하면서 가져오기
-# output "db_public_ip" {
-#   value = ncloud_public_ip.db.public_ip
-# }
+## db 서버 공인 IP 를 생성하면서 가져오기
+output "db_public_ip" {
+  value = module.servers.db_public_ip
+}
 
 
-# ## 서버 스펙 출력
+## 서버 스펙 출력
 # output "products" {
 #   value = {
-#     for product in data.ncloud_server_products.products.server_products:
+#     for product in module.servers.products:
 #     product.id => product.product_name
 #   }
 # }
