@@ -1,16 +1,16 @@
 # ## load balancer setup start
 # # load balancer
-# resource "ncloud_lb" "be-lb-prod" {
+# resource "ncloud_lb" "be-lb" {
 #   name = "tf-lb-prod"
 #   network_type = "PUBLIC"
 #   type = "NETWORK_PROXY"
 #   throughput_type = "SMALL"
-#   subnet_no_list = [ ncloud_subnet.be-prod-loadbalancer.id ]
+#   subnet_no_list = [ ncloud_subnet.be-loadbalancer.id ]
 # }
 # # target group
-# resource "ncloud_lb_target_group" "be-lb-prod" {
+# resource "ncloud_lb_target_group" "be-lb" {
 #     name = "be-tg-prod"
-#     vpc_no   = ncloud_vpc.prod-main.vpc_no
+#     vpc_no   = ncloud_vpc.main.vpc_no
 #     protocol = "PROXY_TCP"
 #     target_type = "VSVR"
 #     port        = 8000
