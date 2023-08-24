@@ -15,10 +15,15 @@ provider "ncloud" {
   site        = var.site
   support_vpc = var.support_vpc
 }
+
+locals {
+  env = "prod"
+}
+
 module "network" {
   source = "../modules/network"
 
-  env = "prod"
+  env = local.env
   region = var.region
   site = var.site
   support_vpc = var.support_vpc
@@ -29,7 +34,7 @@ module "network" {
 module "servers" {
   source = "../modules/server"
 
-    env = "prod"
+    env = local.env
 
     region = var.region
     site = var.site
@@ -52,4 +57,21 @@ module "servers" {
     DJANGO_SECRET_KEY = var.DJANGO_SECRET_KEY
 
     vpc_id = module.network.vpc_id
+}
+
+module "loadbalancer" {
+  source = "../modules/loadbalancer"
+
+  env = local.env
+
+  region = var.region
+  site = var.site
+  support_vpc = var.support_vpc
+
+  NCP_ACCESS_KEY = var.NCP_ACCESS_KEY
+  NCP_SECRET_KEY = var.NCP_SECRET_KEY
+
+  vpc_id = module.network.vpc_id
+  be_server = module.servers.be_server
+  subnet_be_loadbalancer = module.servers.subnet_be_loadbalancer
 }

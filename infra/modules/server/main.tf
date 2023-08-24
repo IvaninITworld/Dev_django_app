@@ -104,22 +104,15 @@ data "ncloud_server_products" "products" {
 }
 
 # server product setup end
+##### server sepc en
 
-##### server sepc end
+
+
+
+
 
 ##### network
-
 # ## VPC setup start 
-# // cidr_block
-# resource "ncloud_vpc" "main" {
-#     name = "lion-${var.env}-tf"
-#     ipv4_cidr_block = "10.10.0.0/16"
-# }
-
-# resource "ncloud_network_acl" "nacl" {
-#     vpc_no = ncloud_vpc.main.id
-# }
-
 data "ncloud_vpc" "main" {
   id = var.vpc_id
 }
@@ -150,10 +143,6 @@ resource "ncloud_subnet" "be-loadbalancer" {
 }
 ## Subnet setup end
 
-
-
-
-
 ## network interface setup for ACG start
 // number of network interface, access_control_group, subnet_no
 # web
@@ -178,10 +167,6 @@ resource "ncloud_network_interface" "db" {
     ]
 }
 ## network interface setup for ACG end
-
-
-
-
 
 ## ACG: access control group setup start
 // ncloud_access_control_group, ncloud_access_control_group_rule
@@ -226,12 +211,10 @@ resource "ncloud_access_control_group_rule" "web-acg-rule" {
   }
 }
 ## ACG: access control group setup end
-
-
 ##### network end
 
-##### initscript 
 
+##### initscript 
 ## init script setup start
 # be_init
 resource "ncloud_init_script" "be" {
@@ -266,5 +249,4 @@ resource "ncloud_init_script" "db" {
   })
 }
 ## init script setup end
-
 ##### initscript end

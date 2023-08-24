@@ -8,6 +8,10 @@ output "db_public_ip" {
   value = module.servers.db_public_ip
 }
 
+output "loadbalance_dns" {
+  value = module.loadbalancer.lb-dns
+}
+
 
 ## 서버 스펙 출력
 # output "products" {

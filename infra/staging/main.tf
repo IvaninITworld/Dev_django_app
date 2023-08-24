@@ -9,11 +9,11 @@ terraform {
 
 // Configure the ncloud provider
 provider "ncloud" {
-  region      = "KR"
-  site        = "PUBLIC"
-  support_vpc = true
-  access_key = var.NCP_ACCESS_KEY
-  secret_key = var.NCP_SECRET_KEY
+  access_key  = var.NCP_ACCESS_KEY
+  secret_key  = var.NCP_SECRET_KEY
+  region      = var.region
+  site        = var.site
+  support_vpc = var.support_vpc
 }
 
 locals {
@@ -36,6 +36,7 @@ module "network" {
 module "servers" {
   source = "../modules/server"
 
+  # going to variabels.tf
   env = local.env
   
   region = var.region
@@ -61,6 +62,22 @@ module "servers" {
   vpc_id = module.network.vpc_id
 }
 
+module "loadbalancer" {
+  source = "../modules/loadbalancer"
+
+  env = local.env
+
+  region = var.region
+  site = var.site
+  support_vpc = var.support_vpc
+
+  NCP_ACCESS_KEY = var.NCP_ACCESS_KEY
+  NCP_SECRET_KEY = var.NCP_SECRET_KEY
+
+  vpc_id = module.network.vpc_id
+  be_server = module.servers.be_server
+  subnet_be_loadbalancer = module.servers.subnet_be_loadbalancer
+}
 
 # // Create a new server instance
 # resource "ncloud_login_key" "loginkey" {

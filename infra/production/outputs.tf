@@ -8,6 +8,11 @@ output "db_public_ip" {
   value = module.servers.db_public_ip
 }
 
+# loadbalance dns
+output "loadbalance_dns" {
+  value = module.loadbalancer.lb-dns
+}
+
 # ## main backend server IP
 # output "backend_public_ip" {
 #   value = ncloud_public_ip.we-prod.public_ip
