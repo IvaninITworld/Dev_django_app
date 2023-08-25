@@ -91,11 +91,18 @@ variable "subnet_be_server" {
   type = string
 }
 
-# # init_script
-# variable "init_script_path" {
-#   type = string
-# }
 
-# variable "init_script_envs" {
-#   type = map(any)
-# }
+# init_script
+variable "init_script_path" {
+  type = string
+}
+
+variable "init_script_envs" {
+  type = map(any)
+}
+
+
+# product code
+variable "server_product_code" {
+  type = string
+}
