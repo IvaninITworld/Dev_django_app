@@ -16,41 +16,6 @@ provider "ncloud" {
   support_vpc = var.support_vpc
 }
 
-# SSH 로 서버에 접근할 때 쓰는 키 -> pem 키?
-resource "ncloud_login_key" "loginkey" {
-  key_name = "lion-${var.name}key-${var.env}"
-}
-
-## server setup start
-resource "ncloud_server" "main" {
-  subnet_no                 = var.subnet_be_server
-  name                      = "${var.name}-server-${var.env}"
-  server_image_product_code = data.ncloud_server_products.products.server_image_product_code
-  server_product_code       = data.ncloud_server_products.products.product_code
-  login_key_name            = ncloud_login_key.loginkey.key_name
-  init_script_no = ncloud_init_script.main.id
-
-  network_interface {
-    network_interface_no = ncloud_network_interface.main.id
-    order = 0
-  }
-}
-resource "ncloud_public_ip" "main" {
-  server_instance_no = ncloud_server.main.id
-  description = "public IP for ${var.name} server ${var.env}"
-}
-## server setup end
-
-
-# https://github.com/NaverCloudPlatform/terraform-ncloud-docs/blob/main/docs/vpc_products/ubuntu-20.04.md
-# server product setup start
-data "ncloud_server_products" "products" {
-  server_image_product_code = "SW.VSVR.OS.LNX64.UBNTU.SVR2004.B050"
-  product_code = var.product_code
-  # product_code = "SVR.VSVR.HICPU.C002.M004.NET.SSD.B050.G002"
-}
-
-
 ##### network
 ## VPC data block 
 data "ncloud_vpc" "main" {
@@ -63,24 +28,18 @@ data "ncloud_subnet" "main" {
   id = var.subnet_be_server
 }
 
-
-## network interface setup for ACG start
-# network interface
-resource "ncloud_network_interface" "main" {
-    name                  = "${var.name}-nic-${var.env}"
-    description           = "for ${var.name} server"
-    subnet_no             = var.subnet_be_server
-    access_control_groups = [
-        data.ncloud_vpc.main.default_access_control_group_no,
-        ncloud_access_control_group.main.id,
-    ]
+# SSH 로 서버에 접근할 때 쓰는 키 -> pem 키?
+resource "ncloud_login_key" "loginkey" {
+  key_name = "lion-${var.name}key-${var.env}"
 }
+
 # ACG: access control group setup start
 resource "ncloud_access_control_group" "main" {
   name        = "lion-${var.name}-${var.env}"
   description = "${var.name} ACG"
   vpc_no      = data.ncloud_vpc.main.vpc_no
 }
+
 # Inbound rule
 resource "ncloud_access_control_group_rule" "main" {
   access_control_group_no = ncloud_access_control_group.main.id
@@ -93,7 +52,32 @@ resource "ncloud_access_control_group_rule" "main" {
   }
 }
 
+## network interface setup for ACG start
+# network interface
+resource "ncloud_network_interface" "main" {
+    name                  = "${var.name}-nic-${var.env}"
+    description           = "for ${var.name} server"
+    subnet_no             = var.subnet_be_server
+    access_control_groups = [
+        data.ncloud_vpc.main.default_access_control_group_no,
+        ncloud_access_control_group.main.id,
+    ]
+}
 
+## server setup start
+resource "ncloud_server" "main" {
+  subnet_no                 = var.subnet_be_server
+  name                      = "${var.name}-server-${var.env}"
+  server_image_product_code = "SW.VSVR.OS.LNX64.UBNTU.SVR2004.B050"
+  server_product_code       = var.server_product_code
+  login_key_name            = ncloud_login_key.loginkey.key_name
+  init_script_no = ncloud_init_script.main.id
+
+  network_interface {
+    network_interface_no = ncloud_network_interface.main.id
+    order = 0
+  }
+}
 
 #### initscript 
 # init script setup start
