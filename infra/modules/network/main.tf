@@ -27,3 +27,27 @@ resource "ncloud_network_acl" "nacl" {
     vpc_no = ncloud_vpc.main.id
 }
 ## VPC setup end
+
+## Subnet setup start 
+// vpc_no, subnet: cidrsubnet, subnet_type, usage_type
+resource "ncloud_subnet" "be-server" {
+    vpc_no         = ncloud_vpc.main.vpc_no
+    subnet         = cidrsubnet(ncloud_vpc.main.ipv4_cidr_block, 8, 3)
+    zone           = "KR-2"
+    network_acl_no = ncloud_vpc.main.default_network_acl_no
+    subnet_type    = "PUBLIC"
+    name           = "be-server-${var.env}"
+    usage_type     = "GEN"
+}
+# load blanacer
+resource "ncloud_subnet" "be-loadbalancer" {
+    vpc_no         = ncloud_vpc.main.id
+    subnet         = cidrsubnet(ncloud_vpc.main.ipv4_cidr_block, 8, 4)
+    zone           = "KR-2"
+    network_acl_no = ncloud_vpc.main.default_network_acl_no
+    subnet_type    = "PRIVATE" // PUBLIC(Public) | PRIVATE(Private)
+    // below fields is optional
+    name           = "be-loadbalancer-${var.env}"
+    usage_type     = "LOADB"    // GEN(General) | LOADB(For load balancer)
+}
+## Subnet setup end

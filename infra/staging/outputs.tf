@@ -12,16 +12,3 @@ output "loadbalance_dns" {
   value = module.loadbalancer.lb-dns
 }
 
-
-## 서버 스펙 출력
-# output "products" {
-#   value = {
-#     for product in module.servers.products:
-#     product.id => product.product_name
-#   }
-# }
-
-# ## 로드밸런서 도메인 주소값 출력
-# output "ncloud-lb-domain" {
-#   value = ncloud_lb.lion-lb-tf.domain
-# }

@@ -10,12 +10,20 @@ variable "support_vpc" {
 }
 
 # instance setup
+variable "name" {
+  type = string
+}
 variable "username" {
   type = string
 }
 variable "password" {
   type = string
 }
+variable "product_code" {
+  type = string
+}
+
+
 
 # NCP setup
 variable "NCP_ACCESS_KEY" {
@@ -48,6 +56,7 @@ variable "db_password" {
 }
 variable "db_port" {
   type = string
+  default = "5432"
   sensitive = true
 }
 
@@ -71,3 +80,22 @@ variable "env" {
 variable "vpc_id" {
   type = string
 }
+
+# acg_port_range
+variable "acg_port_range" {
+  type = string
+}
+
+# subnet
+variable "subnet_be_server" {
+  type = string
+}
+
+# # init_script
+# variable "init_script_path" {
+#   type = string
+# }
+
+# variable "init_script_envs" {
+#   type = map(any)
+# }
