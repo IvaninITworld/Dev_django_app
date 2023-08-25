@@ -26,15 +26,12 @@ module "network" {
   source = "../modules/network"
 
   env = local.env
-
   region = var.region
   site = var.site
   support_vpc = var.support_vpc
-
   NCP_ACCESS_KEY = var.NCP_ACCESS_KEY
   NCP_SECRET_KEY = var.NCP_SECRET_KEY
 }
-
 
 module "be" {
   source = "../modules/server"
@@ -100,9 +97,7 @@ module "db" {
   db_user = var.db_user
   db_password = var.db_password
   }
-
   init_script_path = "db_init_script.tftpl"
-
 }
 
 
@@ -125,7 +120,6 @@ module "loadbalancer" {
 
 data "ncloud_server_products" "sm" {
   server_image_product_code = "SW.VSVR.OS.LNX64.UBNTU.SVR2004.B050"
-  product_code = "SVR.VSVR.HICPU.C002.M004.NET.SSD.B050.G002"
 
   filter {
     name   = "product_code"
