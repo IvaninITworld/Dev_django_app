@@ -129,6 +129,7 @@ env.bak/
 venv.bak/
 *.env
 .envs/prod
+.db_envs
 
 # Spyder project settings
 .spyderproject
@@ -211,3 +212,4 @@ terraform.rc
 
 # AWS user info
 infra/aws/users.txt
+
