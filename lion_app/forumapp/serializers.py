@@ -15,6 +15,32 @@ class PostSerializer(serializers.ModelSerializer):
         )
 
 
+class PostUploadSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Post
+        fields = (
+            "id",
+            "topic",
+            "title",
+            "content",
+            "image",
+            "owner",
+            "created_at",
+            "updated_at",
+            "content",
+            "image",
+        )
+
+        read_only_fields = (
+            "id",
+            "owner",
+            "created_at",
+            "updated_at",
+        )
+
+    image = serializers.ImageField(required=False)
+
+
 class TopicSerializer(serializers.ModelSerializer):
     # 모델을 시리얼라이져로 가져올 때는 Meta 를 정의
     class Meta:  # 어떤 모델을, 어떤 필드를 가져올지

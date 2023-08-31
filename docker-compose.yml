@@ -24,6 +24,7 @@ services: # 서비스들의 시작
       - ./.envs/local/django
       - ./.envs/local/db
       - ./.envs/local/server
+      - ./.envs/prod/ncp
     environment:
       - AWS_SECRET_NAME=like/lion/lecture
 
@@ -46,7 +47,7 @@ services: # 서비스들의 시작
       - ./.envs/local/server
 
   db:
-    container_name: postgres_db
+    container_name: postgres-db
     image: postgres:15
     env_file:
       - ./.envs/local/db
