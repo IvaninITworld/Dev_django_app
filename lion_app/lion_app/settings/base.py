@@ -36,6 +36,7 @@ DEBUG = True
 LOCAL_IP = os.getenv("LOCAL_IP", "")
 
 ALLOWED_HOSTS = [
+    "*",
     "localhost",
     "127.0.0.1",
     "lion-lb-18904316-04e720249f4d.kr.lb.naverncp.com",  # Load balancer
@@ -76,6 +77,7 @@ INSTALLED_APPS += [
 
 
 MIDDLEWARE = [
+    "common.middleware.HealthcheckMiddleware",
     "django.middleware.security.SecurityMiddleware",
     "django.contrib.sessions.middleware.SessionMiddleware",
     "django.middleware.common.CommonMiddleware",
