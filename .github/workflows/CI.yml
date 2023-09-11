@@ -68,7 +68,7 @@ jobs:
                 uses: docker/build-push-action@v4
                 with:
                     context: lion_app # location where image will be built
-                    push: false # This indicates push event
+                    push: true # This indicates push event
                     tags: ${{ env.IMAGE_TAG }},"${{ env.IMAGE }}:${{ steps.timestamp.outputs.timestamp }}"
                     platforms: linux/amd64,linux/arm64
 

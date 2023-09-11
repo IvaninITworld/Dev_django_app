@@ -6,3 +6,4 @@ pymongo==4.4.1 # MongoDB
 djangorestframework==3.14.0
 drf-spectacular==0.26.4 # for API documents
 boto3==1.28.22 # AWS python SDK
+django-seed==0.3.1
