@@ -71,8 +71,3 @@ jobs:
                     push: true # This indicates push event
                     tags: ${{ env.IMAGE_TAG }},"${{ env.IMAGE }}:${{ steps.timestamp.outputs.timestamp }}"
                     platforms: linux/amd64,linux/arm64
-
-            # -   name: Post test
-            #     if: ${{ always() }}
-            #     run: |
-            #         docker stop test && docker rm test
