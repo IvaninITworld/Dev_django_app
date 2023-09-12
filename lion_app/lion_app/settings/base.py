@@ -39,16 +39,12 @@ ALLOWED_HOSTS = [
     "*",
     "localhost",
     "127.0.0.1",
-    "lion-lb-18904316-04e720249f4d.kr.lb.naverncp.com",  # Load balancer
-    "101.79.14.79",  # Load balancer
     # LOCAL_IP,
 ]
 
 CSRF_TRUSTED_ORIGINS = [
     "http://localhost:8888",
     # f"http://{LOCAL_IP}:8888",
-    "http://lion-lb-18904316-04e720249f4d.kr.lb.naverncp.com/",  # Load balancer
-    "http://101.79.14.79/",  # Load balancer
 ]
 
 # Application definition
@@ -73,6 +69,7 @@ INSTALLED_APPS += [
 INSTALLED_APPS += [
     "rest_framework",
     "drf_spectacular",
+    "django_seed",
 ]
 
 
