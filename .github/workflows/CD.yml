@@ -79,5 +79,3 @@ jobs:
   
             - name: echo IMAGE_TAG
               run: echo $IMAGE_TAG
-              
-              

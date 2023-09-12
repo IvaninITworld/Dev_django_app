@@ -7,10 +7,12 @@ from django.conf.urls.static import static
 # from blog.urls import urlpatterns as blog_urls
 from blog.urls import router as blog_router
 from forumapp.urls import router as forum_router
-from common.views import healthcheck
+from common.views import healthcheck, get_version
+
 
 urlpatterns = [
     # path("health/", healthcheck, name="health_check"),
+    path("version/", get_version, name="version"),
     path("admin/", admin.site.urls),
     path("blog/", include(blog_router.urls)),
     path("forum/", include(forum_router.urls)),
