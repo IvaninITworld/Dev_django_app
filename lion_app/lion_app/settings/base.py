@@ -18,7 +18,7 @@ from common.aws import get_secret
 # depth 가 settings 폴더안쪽으로 더 들어갔으니 뒤에 parent 추가
 BASE_DIR = Path(__file__).resolve().parent.parent.parent
 
-VERSION = "unhealthy"
+VERSION = "0.1.0"
 
 AWS_SECRET_NAME = os.getenv("AWS_SECRET_NAME", "like/lion/lecture")
 
