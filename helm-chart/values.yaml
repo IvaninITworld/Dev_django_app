@@ -1,0 +1,36 @@
+image: 
+  repository: 
+  tag: 
+  pullPolicy: 
+
+imagePullSecrets:
+  - name: 
+
+nameOverride: 
+fullnameOverride: 
+
+replicaCount: 
+
+service:
+  type: 
+  port: 
+  targetPort: 
+
+dbService:
+  type: 
+  port: 
+
+containerPort: 
+
+configMap:
+  django:
+    DJANGO_SETTINGS_MODULE: 
+
+secret:
+  django:
+    DJANGO_SECRET_KEY: 
+  db:
+    POSTGRES_DB: 
+    POSTGRES_USER: 
+    POSTGRES_PASSWORD: 
+    POSTGRES_PORT:

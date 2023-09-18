@@ -213,3 +213,4 @@ terraform.rc
 # AWS user info
 infra/aws/users.txt
 
+*_values.yaml
