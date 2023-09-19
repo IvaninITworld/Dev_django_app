@@ -2,9 +2,8 @@ name: CD using argocd
 
 on:
   workflow_dispatch:
-  push:
-    tags:
-      - "*.*.*"
+  release:
+    types: [published]
 
 env:
     IMAGE: ${{ vars.NCP_CONTAINER_REGISTRY }}/lion-app
@@ -23,10 +22,19 @@ jobs:
           ref: main
           token: ${{ secrets.PAT }}
 
-      - name: Get version
-        id: version
-        run: echo "VERSION=${GITHUB_REF#refs/tags/}" >> "$GITHUB_OUTPUT"
-
       - name: Update appVersion in Chart.yaml
         run: |
-          sed -ie 's/appVersion: ".*"/appVersion: "'${{ github.ref_name }}'"/g' lion/Chart.yaml
+          sed -ie 's/appVersion: ".*"/appVersion: "'${{ github.event.release.tag_name }}'"/g' lion/Chart.yaml
+
+      - name: Commit files
+        run: |
+          git config --local user.email "ivankimmh@gmail.com"
+          git config --local user.name "github-actions[bot]"
+          git commit -a -m "update tag"
+          
+      - name: Push changes
+        uses: ad-m/github-push-action@master
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          repository: teacherSsamko/lion_k8s_practice
+          branch: main
