@@ -10,72 +10,53 @@ on:
       - lion_app/** # ** -> 아래 모든 파일, 하나만쓰면 바로 그 경로에 있는 내용들만 적용
 
 env:
-    # IMAGE_TAG: ${{ vars.NCP_CONTAINER_REGISTRY }}/lion-app:latest
     IMAGE: ${{ vars.NCP_CONTAINER_REGISTRY }}/lion-app
     IMAGE_TAG: ${{ vars.NCP_CONTAINER_REGISTRY }}/lion-app:latest
 
 jobs:
-    build_push_to_ncp:
-        name: push to NCP container registry
-        runs-on: ubuntu-latest
-        steps:
-            # checkout to the branch and get the codes
-            - name: Checkout code
-              uses: actions/checkout@v3
+  # release-to-helm:
+  #   runs-on: ubuntu-latest
+  #   steps:
+  #     - name: Checkout code
+  #       uses: actions/checkout@v3
 
-            # buildx - support amd64, arm64
-            - name: Set up Docker buildx
-              uses: docker/setup-buildx-action@v2
-            
-            # NCP Login
-            - name: Login to NCR
-              uses: docker/login-action@v2
-              with:
-                # registry: where to login
-                registry: ${{ vars.NCP_CONTAINER_REGISTRY }}
-                username: ${{ secrets.NCP_ACCESS_KEY }}
-                password: ${{ secrets.NCP_SECRET_KEY }}
-            
-            - name: Get current timestamp
-              id: timestamp
-              run: echo "timestamp=$(date '+%s')" >> "$GITHUB_OUTPUT"
+  #     - name: Update Helm Chart Values
+  #       uses: Nextdoor/helm-set-image-tag-action@main
+  #       with:
+  #         verbose: true
+  #         tag: ${{ github.ref }}
+  #         values: charts/app/values.yaml
+  #         keys: .image.tag
+  #         bump_level: patch
+  #         commit_branch: main
 
-            - name: Build and Export
-              uses: docker/build-push-action@v4
-              with:
-                context: lion_app # location where image will be built
-                push: true # This indicates push event
-                tags: ${{ env.IMAGE_TAG }},"${{ env.IMAGE }}:${{ steps.timestamp.outputs.timestamp }}"
-                
-                      
-    deploy-staging:
-        name: deploy to staging
-        needs: build_push_to_ncp
-        runs-on: ubuntu-latest
-        steps:
-            - name: git pull via SSH
-              uses: appleboy/ssh-action@v1.0.0
-              with:
-                host: ${{ secrets.STAGING_HOST }}
-                username: ${{ secrets.USERNAME }}
-                password: ${{ secrets.PASSWORD }}
-                script: | # while actions is running, please use options !
-                    cd dev_django_app
-                    echo "${{ secrets.NCP_SECRET_KEY }}" | dockers login ${{ vars.NCP_CONTAINER_REGISTRY }} \
-                    --username ${{ secrets.NCP_ACCESS_KEY }} \
-                    --password ${{ secrets.NCP_SECRET_KEY }}
-                    docker pull ${{ env.IMAGE_TAG }}
-                    # docker-compose -f docker-compose.prod.yml up --build -d
-                    docker stop lion-app && docker rm lion-app
-                    docker run -p 8000:8000 -d \
-                    -v ~/.aws:/root/.aws:ro \
-                    --env-file .env \
-                    --name lion-app \
-                    ${{ env.IMAGE_TAG }} \
-                    /start
+  deploy-staging:
+      name: deploy to staging
+      runs-on: ubuntu-latest
+      steps:
+          - name: git pull via SSH
+            uses: appleboy/ssh-action@v1.0.0
+            with:
+              host: ${{ secrets.STAGING_HOST }}
+              username: ${{ secrets.USERNAME }}
+              password: ${{ secrets.PASSWORD }}
+              script: | # while actions is running, please use options !
+                  cd dev_django_app
+                  echo "${{ secrets.NCP_SECRET_KEY }}" | dockers login ${{ vars.NCP_CONTAINER_REGISTRY }} \
+                  --username ${{ secrets.NCP_ACCESS_KEY }} \
+                  --password ${{ secrets.NCP_SECRET_KEY }}
+                  docker pull ${{ env.IMAGE_TAG }}
+                  # docker-compose -f docker-compose.prod.yml up --build -d
+                  docker stop lion-app && docker rm lion-app
+                  docker run -p 8000:8000 -d \
+                  -v ~/.aws:/root/.aws:ro \
+                  --env-file .env \
+                  --name lion-app \
+                  ${{ env.IMAGE_TAG }} \
+                  /start
 
-                # 만약, git pull 을 받지 않은 서버라면, .env 파일로 핸들링할 것이다. 그렇다면
-                # --env-file .env 로 변경!
-  
-            - name: echo IMAGE_TAG
-              run: echo $IMAGE_TAG
+              # 만약, git pull 을 받지 않은 서버라면, .env 파일로 핸들링할 것이다. 그렇다면
+              # --env-file .env 로 변경!
+
+          - name: echo IMAGE_TAG
+            run: echo $IMAGE_TAG
