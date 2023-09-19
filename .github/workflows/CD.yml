@@ -3,7 +3,10 @@ name: CD using argocd
 on:
   workflow_dispatch:
   release:
-    types: [published]
+    types:
+      - created
+      - edited
+      - published
 
 env:
     IMAGE: ${{ vars.NCP_CONTAINER_REGISTRY }}/lion-app
