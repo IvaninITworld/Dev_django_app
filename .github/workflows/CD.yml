@@ -1,12 +1,9 @@
 name: CD using argocd
 
 on:
-  workflow_dispatch:
   release:
-    types:
-      - created
-      - edited
-      - published
+    types: [published]
+  workflow_dispatch:
 
 env:
     IMAGE: ${{ vars.NCP_CONTAINER_REGISTRY }}/lion-app
@@ -26,6 +23,7 @@ jobs:
 
       - name: Update appVersion in Chart.yaml
         run: |
+          echo "Using version tag: ${{ github.event.release.tag_name }}"
           sed -ie 's/appVersion: ".*"/appVersion: "'${{ github.event.release.tag_name }}'"/g' lion/Chart.yaml
 
       - name: Commit files
