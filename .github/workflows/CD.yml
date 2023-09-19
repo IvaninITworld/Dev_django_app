@@ -29,4 +29,4 @@ jobs:
 
       - name: Update appVersion in Chart.yaml
         run: |
-          sed -ie 's/appVersion: ".*"/appVersion: "'$VERSION'"/g' lion/Chart.yaml
+          sed -ie 's/appVersion: ".*"/appVersion: "'${{ github.ref_name }}'"/g' lion/Chart.yaml

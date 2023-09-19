@@ -5,8 +5,6 @@ on:
     push:
         branches:
             -   "main"
-        tags:
-            -   "*.*.*"
 
 env:
     IMAGE: ${{ vars.NCP_CONTAINER_REGISTRY }}/lion-app
@@ -62,48 +60,38 @@ jobs:
                     username: ${{ secrets.NCP_ACCESS_KEY }}
                     password: ${{ secrets.NCP_SECRET_KEY }}
             
-            # -   name: Bump version and push tag
-            #     id: tag_version
-            #     uses: mathieudutour/github-tag-action@v6.1
-            #     with:
-            #         github_token: ${{ secrets.GITHUB_TOKEN }}
-            #         default_bump: false
-            #         # fix: - patch, feat: - minor, BREAKING CHANGE: - major
+            -   name: Bump version and push tag
+                id: tag_version
+                uses: mathieudutour/github-tag-action@v6.1
+                with:
+                    github_token: ${{ secrets.GITHUB_TOKEN }}
+                    default_bump: false
+                    # fix: - patch, feat: - minor, BREAKING CHANGE: - major
             
-            # -   name: Create a GitHub release
-            #     uses: ncipollo/release-action@v1
-            #     with:
-            #         tag: ${{ steps.tag_version.outputs.new_tag }}
-            #         name: Release ${{ steps.tag_version.outputs.new_tag }}
-            #         body: ${{ steps.tag_version.outputs.changelog }}
+            -   name: Create a GitHub release
+                uses: ncipollo/release-action@v1
+                with:
+                    tag: ${{ steps.tag_version.outputs.new_tag }}
+                    name: Release ${{ steps.tag_version.outputs.new_tag }}
+                    body: ${{ steps.tag_version.outputs.changelog }}
 
-            # -   name: create VERSION
-            #     run: echo "VERSION=${{ steps.tag_version.outputs.new_tag }}" >> "$GITHUB_OUTPUT"
-
-            -   name: Get current timestamp
-                id: timestamp
-                run: echo "timestamp=$(date '+%s')" >> "$GITHUB_OUTPUT"
-
-            -   name: Get version
-                if: startsWith(github.ref, 'refs/tags')
-                id: version
-                run: echo "VERSION=${GITHUB_REF#refs/tags/}" >> "$GITHUB_OUTPUT"
-
+            -   name: create TAG
+                id: created_tag
+                run: |
+                    if [[ "${{ steps.tag_version.outputs.new_tag }}" != "" ]]; then
+                        echo "Using version tag: ${{ steps.tag_version.outputs.new_tag }}"
+                        echo "TAG=${{ steps.tag_version.outputs.new_tag }}" >> $GITHUB_ENV
+                    else
+                        TIMESTAMP=$(date '+%s')
+                        echo "Using timestamp tag: $TIMESTAMP"
+                        echo "TAG=$TIMESTAMP" >> $GITHUB_ENV
+                    fi
 
             -   name: Build and Push
-                if: startsWith(github.ref, 'refs/heads')
                 uses: docker/build-push-action@v4
                 with:
                     context: lion_app
                     push: true
-                    tags: ${{ env.IMAGE_TAG }},"${{ env.IMAGE }}:${{ steps.timestamp.outputs.timestamp }}"
+                    tags: ${{ env.IMAGE_TAG }},"${{ env.IMAGE }}:${{ env.TAG }}"
                     platforms: linux/amd64,linux/arm64
             
-            -   name: build-and-push
-                if: startsWith(github.ref, 'refs/tags')
-                uses: docker/build-push-action@v4
-                with:
-                    context: lion_app
-                    tags: ${{ env.IMAGE_TAG }},"${{ env.IMAGE }}:${{ steps.version.outputs.VERSION }}"
-                    push: true
-                    platforms: linux/amd64,linux/arm64
