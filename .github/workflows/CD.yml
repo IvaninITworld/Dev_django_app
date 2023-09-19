@@ -8,7 +8,6 @@ on:
 env:
     IMAGE: ${{ vars.NCP_CONTAINER_REGISTRY }}/lion-app
     IMAGE_TAG: ${{ vars.NCP_CONTAINER_REGISTRY }}/lion-app:latest
-    TAG: ""
 
 jobs:
   deploy:
