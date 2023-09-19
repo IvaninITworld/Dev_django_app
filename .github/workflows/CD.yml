@@ -19,7 +19,7 @@ jobs:
         with:
           repository: IvaninITworld/k8s_study
           ref: main
-          token: ${{ secrets.PAT }}
+          token: ${{ secrets.k8s_token }}
 
       - name: Update appVersion in Chart.yaml
         run: |
