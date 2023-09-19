@@ -60,14 +60,28 @@ jobs:
                     username: ${{ secrets.NCP_ACCESS_KEY }}
                     password: ${{ secrets.NCP_SECRET_KEY }}
             
-            -   name: Get current timestamp
-                id: timestamp
-                run: echo "timestamp=$(date '+%s')" >> "$GITHUB_OUTPUT"
+            # -   name: Get current timestamp
+            #     id: timestamp
+            #     run: echo "timestamp=$(date '+%s')" >> "$GITHUB_OUTPUT"
 
+            -   name: Bump version and push tag
+                id: tag_version
+                uses: mathieudutour/github-tag-action@v6.1
+                with:
+                    github_token: ${{ secrets.GITHUB_TOKEN }}
+            
+            -   name: Create a GitHub release
+                uses: ncipollo/release-action@v1
+                with:
+                    tag: ${{ steps.tag_version.outputs.new_tag }}
+                    name: Release ${{ steps.tag_version.outputs.new_tag }}
+                    body: ${{ steps.tag_version.outputs.changelog }}
+    
             -   name: Build and Push
                 uses: docker/build-push-action@v4
                 with:
                     context: lion_app # location where image will be built
                     push: true # This indicates push event
-                    tags: ${{ env.IMAGE_TAG }},"${{ env.IMAGE }}:${{ steps.timestamp.outputs.timestamp }}"
+                    # tags: ${{ env.IMAGE_TAG }},"${{ env.IMAGE }}:${{ steps.timestamp.outputs.timestamp }}"
+                    tags: ${{ env.IMAGE_TAG }},"${{ env.IMAGE }}:${{ steps.tag_version.outputs.new_tag }}"
                     platforms: linux/amd64,linux/arm64
