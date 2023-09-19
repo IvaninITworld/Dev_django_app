@@ -28,4 +28,5 @@ jobs:
         run: echo "VERSION=${GITHUB_REF#refs/tags/}" >> "$GITHUB_OUTPUT"
 
       - name: Update appVersion in Chart.yaml
-        run: ./update_app_version.sh "${{ steps.version.outputs.VERSION }}"
+        run: |
+          sed -ie 's/appVersion: ".*"/appVersion: "'$VERSION'"/g' lion/Chart.yaml
