@@ -98,7 +98,7 @@ jobs:
                 with:
                     context: lion_app
                     push: true
-                    tags: ${{ env.IMAGE_TAG }}:,"${{ env.IMAGE }}:${{ steps.timestamp.outputs.timestamp }}"
+                    tags: ${{ env.IMAGE_TAG }},"${{ env.IMAGE }}:${{ steps.timestamp.outputs.timestamp }}"
                     platforms: linux/amd64,linux/arm64
             
             -   name: build-and-push
