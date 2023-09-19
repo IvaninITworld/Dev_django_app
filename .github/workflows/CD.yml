@@ -35,5 +35,5 @@ jobs:
         uses: ad-m/github-push-action@master
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
-          repository: teacherSsamko/lion_k8s_practice
+          repository: IvaninITworld/k8s_study
           branch: main
