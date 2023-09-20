@@ -56,17 +56,22 @@ services: # 서비스들의 시작
     volumes:
       - postgres_data:/var/lib/postgresql/data
 
-  # mongo:
-  #   container_name: mongo
-  #   image: mongo:latest
-  #   ports:
-  #     - 27017:27017
-  #   volumes:
-  #     - mongo_data:/data/db
+  prome:
+    container_name: lion-prome
+    image: prom/prometheus:latest
+    ports:
+      - "9090:9090"
+    volumes:
+      - ./monitoring:/etc/prometheus
+      - prometheus-data:/prometheus
+    command: # 엔트리포인트를 실행시키고 난 다음에 실행되는 커맨드의 옵션 설정
+      - "--web.console.templates=/etc/prometheus/consoles/"
+      - "--config.file=/etc/prometheus/prometheus.yml"
 
 
 volumes:
   staticfiles:
   postgres_data:
-  # mongo_data:
+  prometheus-data:
+
 

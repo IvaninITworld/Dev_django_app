@@ -27,6 +27,7 @@ urlpatterns = [
         SpectacularSwaggerView.as_view(url_name="api-schema"),
         name="api-swagger-ui",
     ),
+    path("", include("django_prometheus.urls")),
 ] + static(
     settings.STATIC_URL, document_root=settings.STATIC_ROOT
 )  # static 파일을 얹어줘

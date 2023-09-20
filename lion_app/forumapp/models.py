@@ -1,9 +1,11 @@
 from django.db import models
 from django.contrib.auth.models import User
 
+from django_prometheus.models import ExportModelOperationsMixin
+
 
 # Create your models here.
-class Topic(models.Model):
+class Topic(ExportModelOperationsMixin("topic"), models.Model):
     # postgres 를 사용할 예정이기 때문에 -> postgres 에서는 Text 와 Char 를 같게 취급
     # 그래서 스트링을 다루는 곳에서는 Text 사용 - 공식문서
     name = models.TextField(max_length=100, unique=True)
@@ -27,7 +29,7 @@ class Topic(models.Model):
         return False
 
 
-class Post(models.Model):
+class Post(ExportModelOperationsMixin("post"), models.Model):
     topic = models.ForeignKey(Topic, on_delete=models.CASCADE, related_name="posts")
     title = models.TextField(max_length=200)
     content = models.TextField()
@@ -40,7 +42,7 @@ class Post(models.Model):
         return self.title
 
 
-class TopicGroupUser(models.Model):
+class TopicGroupUser(ExportModelOperationsMixin("topicgroupuser"), models.Model):
     class GroupChoices(models.IntegerChoices):
         common = 0
         admin = 1
