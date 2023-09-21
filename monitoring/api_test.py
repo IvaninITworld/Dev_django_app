@@ -14,14 +14,15 @@ class APIHandler:
     def __init__(self, model: str, host: str = "http://localhost:8000"):
         self.model = model
         self.host = host
+        self.access, self.fresh = self._login()
 
-    def _get_url(self, detail=False, pk: int = 0) -> str:
+    def _get_url(self, detail=False, pk: int = None) -> str:
         root_url = f"{self.host}{self.urls.get(self.model)}"
         if detail:
             return f"{root_url}{pk}"
         return root_url
 
-    def _generate_data(self, fk: int) -> dict:
+    def _generate_data(self, fk: int = None) -> dict:
         fake = Faker()
         if self.model == "post":
             data = {
@@ -33,31 +34,68 @@ class APIHandler:
             data = {
                 "name": fake.text(max_nb_chars=10),
                 "is_private": False,
-                "owner": fk,
             }
         else:
             raise Exception
         return data
 
-    def _get_pk(self, model: str = "") -> int:
-        return 0
+    def _get_pk(self, model: str = None) -> int:
+        lst = self.list(model)
+        return lst[0].pk
+
+    def _login(self):
+        url = f"{self.host}/api/token/"
+        data = {
+            "username": "admin",
+            "password": "admin",
+        }
+        res = requests.post(url, data=data)
+        res_data = res.json()
+        return res_data.get("access"), res_data.get("refresh")
+
+    def _api_call(self, method: str, url: str, data: dict = None):
+        request = {
+            "url": url,
+            "data": data,
+            "headers": {"Authorization": f"Bearer {self.access}"},
+        }
+        # if method == "post":
+        #     requests.post(**request)
+        # elif method == "get":
+        #     requests.get(**request)
+        # elif method == "put":
+        #     requests.put(**request)
+        # elif method == "delete":
+        #     requests.delete(**request)
+        # else:
+        #     raise Exception
+        getattr(requests, method)(**request)
 
     def create(self):
-        fk = self._get_pk()
-        requests.post(self._get_url(), data=self._generate_data(fk))
-
-    def list(self):
         if self.model == "topic":
-            res = requests.get(self._get_url())
+            self._api_call("post", url=self._get_url(), data=self._generate_data())
         elif self.model == "post":
-            res = requests.get("")
+            fk = self._get_pk("topic")
+            self._api_call("post", url=self._get_url(), data=self._generate_data(fk))
+
+    def list(self, model: str = None):
+        target_model = model or self.model
+        if target_model == "topic":
+            res = requests.get(self._get_url())
+        elif target_model == "post":
+            res = requests.get(
+                f"{self.host}/forum/topics/{self._get_pk('topic')}/posts"
+            )
         else:
             raise Exception
         return res
 
     def update(self):
         pk = self._get_pk()
-        fk = self._get_pk()
+        if self.model == "topic":
+            fk = self._get_pk("user")
+        elif self.model == "post":
+            fk = self._get_pk("topic")
         requests.put(self._get_url(pk=pk), data=self._generate_data(fk))
 
     def detail(self):

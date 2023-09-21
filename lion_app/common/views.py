@@ -1,5 +1,8 @@
 from django.http import JsonResponse, HttpResponseServerError
 from django.conf import settings
+from rest_framework.views import APIView
+from rest_framework.response import Response
+from rest_framework.request import Request
 
 request_count = 0
 
@@ -36,3 +39,8 @@ def get_version(request):
     global request_count
     response_data = {"version": settings.VERSION}
     return JsonResponse(response_data)
+
+
+class Me(APIView):
+    def get(self, request: Request):
+        return Response({"pk": request.user.pk})

@@ -46,10 +46,8 @@ class TopicSerializer(serializers.ModelSerializer):
     class Meta:  # 어떤 모델을, 어떤 필드를 가져올지
         model = Topic
         fields = (
-            "id",
             "name",
             "is_private",
-            "owner",
             "created_at",
             "updated_at",
             "posts",
@@ -58,6 +56,7 @@ class TopicSerializer(serializers.ModelSerializer):
         # 유저가 수정하면 안되는 부분들을 정리
         read_only_fields = (
             "id",
+            "owner",
             "created_at",
             "updated_at",
         )

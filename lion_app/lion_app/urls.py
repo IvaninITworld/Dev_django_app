@@ -7,11 +7,18 @@ from django.conf.urls.static import static
 # from blog.urls import urlpatterns as blog_urls
 from blog.urls import router as blog_router
 from forumapp.urls import router as forum_router
-from common.views import healthcheck, get_version
+from common.views import healthcheck, get_version, Me
+from rest_framework_simplejwt.views import (
+    TokenObtainPairView,
+    TokenRefreshView,
+)
 
 
 urlpatterns = [
     # path("health/", healthcheck, name="health_check"),
+    path("api/token/", TokenObtainPairView.as_view(), name="token_obtain_pair"),
+    path("api/token/refresh/", TokenRefreshView.as_view(), name="token_refresh"),
+    path("users/me/", Me.as_view(), name="me"),
     path("version/", get_version, name="version"),
     path("admin/", admin.site.urls),
     path("blog/", include(blog_router.urls)),

@@ -9,3 +9,4 @@ boto3==1.28.22 # AWS python SDK
 django-seed==0.3.1
 django-prometheus==2.3.1
 Faker==19.6.0
+djangorestframework-simplejwt==5.3.0
