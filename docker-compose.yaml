@@ -68,6 +68,14 @@ services: # 서비스들의 시작
       - "--web.console.templates=/etc/prometheus/consoles/"
       - "--config.file=/etc/prometheus/prometheus.yml"
 
+  grafana:
+    container_name: grafana
+    image: grafana/grafana-oss
+    ports:
+      - "3000:3000"
+    environment:
+      - GF_SECURITY_ADMIN_USER=lion
+      - GF_SECURITY_ADMIN_PASSWORD=tiger1234
 
 volumes:
   staticfiles:

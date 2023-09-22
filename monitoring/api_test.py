@@ -1,55 +1,39 @@
+from abc import ABC, abstractmethod
+
 import requests
+import time
 from faker import Faker
 
-# r = requests.get("http://localhost:8000/health/")
-# print(r.json())
 
-
-class APIHandler:
-    urls = {
-        "topic": "/forum/topics/",
-        "post": "/forum/posts/",
-    }
-
+class APIHandler(ABC):
     def __init__(self, model: str, host: str = "http://localhost:8000"):
+        self.root_url = "/forum/topics"
         self.model = model
         self.host = host
-        self.access, self.fresh = self._login()
+        self.access, self.refresh = self._login()
 
     def _get_url(self, detail=False, pk: int = None) -> str:
-        root_url = f"{self.host}{self.urls.get(self.model)}"
         if detail:
-            return f"{root_url}{pk}"
-        return root_url
+            return f"{self.host}{self.root_url}/{pk}/"
+        return f"{self.host}{self.root_url}/"
 
+    @abstractmethod
     def _generate_data(self, fk: int = None) -> dict:
-        fake = Faker()
-        if self.model == "post":
-            data = {
-                "topic": fk,
-                "title": fake.text(max_nb_chars=20),
-                "content": fake.text(max_nb_chars=100),
-            }
-        elif self.model == "topic":
-            data = {
-                "name": fake.text(max_nb_chars=10),
-                "is_private": False,
-            }
-        else:
-            raise Exception
-        return data
+        ...
 
     def _get_pk(self, model: str = None) -> int:
-        lst = self.list(model)
-        return lst[0].pk
+        res = self.list(model)
+        return res.json()[0].get("id")
 
-    def _login(self):
+    def _login(self) -> tuple:
         url = f"{self.host}/api/token/"
         data = {
-            "username": "admin",
-            "password": "admin",
+            "username": "lion",
+            "password": "lion123@@@qwe",
         }
         res = requests.post(url, data=data)
+        print(type(res))
+        print(res)
         res_data = res.json()
         return res_data.get("access"), res_data.get("refresh")
 
@@ -59,62 +43,107 @@ class APIHandler:
             "data": data,
             "headers": {"Authorization": f"Bearer {self.access}"},
         }
-        # if method == "post":
-        #     requests.post(**request)
-        # elif method == "get":
-        #     requests.get(**request)
-        # elif method == "put":
-        #     requests.put(**request)
-        # elif method == "delete":
-        #     requests.delete(**request)
-        # else:
-        #     raise Exception
-        getattr(requests, method)(**request)
+        res = getattr(requests, method)(**request)
+        if res.status_code >= 400:
+            print(res.json())
+        return res
+
+    @abstractmethod
+    def create(self):
+        ...
+
+    @abstractmethod
+    def list(self, model: str = None):
+        ...
+
+    @abstractmethod
+    def update(self):
+        ...
+
+    def detail(self):
+        pk = self._get_pk()
+        self._api_call("get", self._get_url(detail=True, pk=pk))
+
+    def destroy(self):
+        pk = self._get_pk()
+        self._api_call("delete", self._get_url(detail=True, pk=pk))
+
+
+class TopicAPIHandler(APIHandler):
+    def __init__(self, host: str = "http://localhost:8000"):
+        super().__init__("topic", host)
+        self.root_url = "/forum/topics"
+
+    def _generate_data(self, fk: int = None) -> dict:
+        fake = Faker()
+        data = {
+            "name": fake.text(max_nb_chars=10),
+            "is_private": False,
+        }
+        return data
 
     def create(self):
-        if self.model == "topic":
-            self._api_call("post", url=self._get_url(), data=self._generate_data())
-        elif self.model == "post":
-            fk = self._get_pk("topic")
-            self._api_call("post", url=self._get_url(), data=self._generate_data(fk))
+        self._api_call(method="post", url=self._get_url(), data=self._generate_data())
 
     def list(self, model: str = None):
-        target_model = model or self.model
-        if target_model == "topic":
-            res = requests.get(self._get_url())
-        elif target_model == "post":
-            res = requests.get(
-                f"{self.host}/forum/topics/{self._get_pk('topic')}/posts"
-            )
-        else:
-            raise Exception
+        res = self._api_call("get", self._get_url())
         return res
 
     def update(self):
         pk = self._get_pk()
-        if self.model == "topic":
-            fk = self._get_pk("user")
-        elif self.model == "post":
-            fk = self._get_pk("topic")
-        requests.put(self._get_url(pk=pk), data=self._generate_data(fk))
+        self._api_call(
+            "put", self._get_url(detail=True, pk=pk), data=self._generate_data()
+        )
+        return
 
-    def detail(self):
-        pk = self._get_pk()
-        requests.delete(self._get_url(detail=True, pk=pk))
 
-    def destroy(self):
+class PostAPIHandler(APIHandler):
+    def __init__(self, host: str = "http://localhost:8000"):
+        super().__init__("post", host)
+        self.root_url = "/forum/posts"
+
+    def _generate_data(self, fk: int = None) -> dict:
+        fake = Faker()
+        data = {
+            "topic": fk,
+            "title": fake.text(max_nb_chars=20),
+            "content": fake.text(max_nb_chars=100),
+        }
+        return data
+
+    def _get_pk(self, model: str = None) -> int:
+        res = self._api_call("get", f"{self.host}/forum/topics/")
+        return res.json()[0].get("id")
+
+    def create(self):
+        fk = self._get_pk("topic")
+        self._api_call(method="post", url=self._get_url(), data=self._generate_data(fk))
+        return
+
+    def list(self, model: str = None):
+        res = self._api_call(
+            "get", f"{self.host}/forum/topics/{self._get_pk(model='topic')}/posts"
+        )
+
+    def update(self):
         pk = self._get_pk()
-        requests.get(self._get_url(detail=True, pk=pk))
+        fk = self._get_pk("topic")
+        self._api_call(
+            "put", self._get_url(detail=True, pk=pk), data=self._generate_data(fk)
+        )
 
 
 if __name__ == "__main__":
-    topic_handler = APIHandler("topic")
-    post_handler = APIHandler("post")
+    topic_handler = TopicAPIHandler()
+    post_handler = PostAPIHandler()
 
-    topic_handler.create()
-    topic_list_res = topic_handler.list()
-    print("Topic List: ", topic_list_res.json())
+    i = 0
 
-    post_handler.create()
-    post_list_res = post_handler.list()
-    print("Post List: ", post_list_res.json())
+    while True:
+        topic_handler.create()
+        topic_handler.update()
+        post_handler.detail()
+        if i % 30 == 0:
+            post_handler.destroy()
+        i += 1
+        time.sleep(1)
