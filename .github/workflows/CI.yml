@@ -64,7 +64,7 @@ jobs:
                 id: tag_version
                 uses: mathieudutour/github-tag-action@v6.1
                 with:
-                    github_token: ${{ secrets.GITHUB_TOKEN }}
+                    github_token: ${{ secrets.k8s_token }}
                     default_bump: false
                     # fix: - patch, feat: - minor, BREAKING CHANGE: - major
 
@@ -77,7 +77,7 @@ jobs:
                 if: ${{ env.NEW_TAG != '' }}
                 uses: ncipollo/release-action@v1
                 with:
-                    token: ${{ secrets.GITHUB_TOKEN }}
+                    token: ${{ secrets.k8s_token }}
                     tag: ${{ steps.tag_version.outputs.new_tag }}
                     name: Release ${{ steps.tag_version.outputs.new_tag }}
                     body: ${{ steps.tag_version.outputs.changelog }}
