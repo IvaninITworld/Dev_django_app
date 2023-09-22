@@ -1,4 +1,4 @@
-name: CD using argocd
+name: pre CD for argoCD
 
 on:
   workflow_dispatch:
