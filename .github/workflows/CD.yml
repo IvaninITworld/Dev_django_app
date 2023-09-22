@@ -1,9 +1,9 @@
 name: CD using argocd
 
 on:
+  workflow_dispatch:
   release:
     types: [published]
-  workflow_dispatch:
 
 env:
     IMAGE: ${{ vars.NCP_CONTAINER_REGISTRY }}/lion-app
@@ -14,6 +14,12 @@ jobs:
     name: deploy the new version
     runs-on: ubuntu-latest
     steps:
+      - name: Get release version
+        id: get_version
+        run: |
+          echo "$NEW_TAG $TAG"
+          echo "TAG=${{ github.event.release.tag_name }}" >> $GITHUB_ENV
+
       - name: Checkout Helm repository
         uses: actions/checkout@v3
         with:
@@ -23,11 +29,12 @@ jobs:
 
       - name: Update appVersion in Chart.yaml
         run: |
-          echo "Using version tag: ${{ github.event.release.tag_name }}"
-          sed -ie 's/appVersion: ".*"/appVersion: "'${{ github.event.release.tag_name }}'"/g' lion/Chart.yaml
+          echo "Using version tag: ${{ env.TAG }}"
+          sed -ie 's/appVersion: ".*"/appVersion: "'${{ env.TAG }}'"/g' lion/Chart.yaml
 
       - name: Commit files
         run: |
+          echo "Using version tag while commiting: ${{ env.TAG }}"
           git config --local user.email "xormrdlsrks2@gmail.com"
           git config --local user.name "github-actions[bot]"
           git commit -a -m "update tag"

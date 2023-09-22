@@ -71,12 +71,13 @@ jobs:
             -   name: Check if new_tag exists
                 id: check_tag
                 run: |
-                    echo "NEW_TAG_EXISTS=${{ steps.tag_version.outputs.new_tag != '' }}" >> $GITHUB_ENV
+                    echo "NEW_TAG=${{ steps.tag_version.outputs.new_tag }}" >> $GITHUB_OUTPUT
 
             -   name: Create a GitHub release
-                if: env.NEW_TAG_EXISTS == 'true'
+                if: ${{ env.NEW_TAG != '' }}
                 uses: ncipollo/release-action@v1
                 with:
+                    token: ${{ secrets.GITHUB_TOKEN }}
                     tag: ${{ steps.tag_version.outputs.new_tag }}
                     name: Release ${{ steps.tag_version.outputs.new_tag }}
                     body: ${{ steps.tag_version.outputs.changelog }}
@@ -84,9 +85,9 @@ jobs:
             -   name: create TAG
                 id: created_tag
                 run: |
-                    if [[ "${{ steps.tag_version.outputs.new_tag }}" != "" ]]; then
-                        echo "Using version tag: ${{ steps.tag_version.outputs.new_tag }}"
-                        echo "TAG=${{ steps.tag_version.outputs.new_tag }}" >> $GITHUB_ENV
+                    if [[ "${{ env.NEW_TAG }}" != "" ]]; then
+                        echo "Using version tag: ${{ env.NEW_TAG }}"
+                        echo "TAG=${{ env.NEW_TAG }}" >> $GITHUB_ENV
                     else
                         TIMESTAMP=$(date '+%s')
                         echo "Using timestamp tag: $TIMESTAMP"
