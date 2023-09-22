@@ -71,7 +71,7 @@ jobs:
             -   name: Check if new_tag exists
                 id: check_tag
                 run: |
-                    echo "NEW_TAG=${{ steps.tag_version.outputs.new_tag }}" >> $GITHUB_OUTPUT
+                    echo "NEW_TAG=${{ steps.tag_version.outputs.new_tag }}" >> $GITHUB_ENV
 
             -   name: Create a GitHub release
                 if: ${{ env.NEW_TAG != '' }}
