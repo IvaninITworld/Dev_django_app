@@ -21,6 +21,7 @@ jobs:
           echo "TAG=${{ github.event.release.tag_name }}" >> $GITHUB_ENV
 
       - name: Checkout Helm repository
+        if: ${{ env.TAG != '' }}
         uses: actions/checkout@v3
         with:
           repository: IvaninITworld/k8s_study
@@ -28,11 +29,13 @@ jobs:
           token: ${{ secrets.k8s_token }}
 
       - name: Update appVersion in Chart.yaml
+        if: ${{ env.TAG != '' }}
         run: |
           echo "Using version tag: ${{ env.TAG }}"
           sed -ie 's/appVersion: ".*"/appVersion: "'${{ env.TAG }}'"/g' lion/Chart.yaml
 
       - name: Commit files
+        if: ${{ env.TAG != '' }}
         run: |
           echo "Using version tag while commiting: ${{ env.TAG }}"
           git config --local user.email "xormrdlsrks2@gmail.com"
@@ -40,6 +43,7 @@ jobs:
           git commit -a -m "update tag"
           
       - name: Push changes
+        if: ${{ env.TAG != '' }}
         uses: ad-m/github-push-action@master
         with:
           github_token: ${{ secrets.k8s_token }}
